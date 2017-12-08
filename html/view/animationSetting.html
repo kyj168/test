@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8"/>
+    <title>动画设置&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/analysis.css" />
+</head>
+</head>
+<body>
+<table class="paramTable">
+    <tr>
+        <td>
+            <span>名称:</span>
+        </td>
+        <td>
+            <input type="text" id="txtName" onkeyup="checkStr(this)" value="动画"/>
+        </td>
+    </tr>
+    <tr id="divfps">
+        <td>
+            <span>帧率:</span>
+        </td>
+        <td>
+            <input type="text" id="txtFps" onkeyup="checkPositiveInt(this)" value="30"/><span class="afterInText">(0-30)</span>
+        </td>
+    </tr>
+</table>
+<div class="buttonTd">
+    <button id="btnOK">确定</button>
+    <button onClick="window.close();">取消</button>
+</div>
+<script type="text/javascript" src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script type="text/javascript" src="../../js/common/common.js"></script>
+<script type="text/javascript">
+    $(function (){
+       var fps = $("#txtFps").val();
+       if(fps>30){
+           fps = 30;
+           $("#txtFps").val(fps);
+       }
+        var params = window.dialogArguments;
+        if(params){
+            if(params.fps>30){
+                params.fps = 30;
+            }
+            if(params.xmlNode=="folder"){
+                document.getElementById("divfps").style.display="none";
+            }
+            $("#txtName").val(params.name || "动画");
+            $("#txtFps").val(params.fps || 25);
+        }
+        $("#btnOK").click(function (){
+            if($("#txtName").val()){
+                if(fps>30){
+                    fps = 30;
+                }
+                window.returnValue = {
+                    name : $("#txtName").val(),
+                    fps : $("#txtFps").val() || 25
+                };
+                window.close();
+            }else{
+                alert("请输入动画名，不能为空！");
+            }
+        });
+    });
+</script>
+</body>
+</html>

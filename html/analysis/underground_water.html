@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>地下水</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/icon.css" />
+    <style>
+        *{ font-size: 14px; }
+        table{
+            margin:10px auto;
+        }
+        table td{
+            height: 30px;
+            line-height: 20px;
+        }
+        #container>div{ margin: 10px 0; }
+        input{  font-weight: bold; text-align: left;}
+        button{ width: 65px; height: 30px; margin: 5px 2px;}
+    </style>
+   
+</head>
+
+<body>
+    <table> 
+        <tr>
+            <td><span>抽水井:</span></td>
+            <td>
+                <input id="pumpFilePath"  type="text" disabled="disabled" />
+            </td>
+            <td>
+                <button class="normalBtn" id="pumpFile">选取</button>
+            </td>
+        </tr>
+        <tr>
+            <td><span>测水井:</span></td>
+            <td>
+                <input id="checkFilePath"  type="text" disabled="disabled" />
+            </td>
+            <td>
+                <button class="normalBtn" id="checkFile">选取</button>
+            </td>
+        </tr>
+        <tr>
+            <td><span>水面颜色:</span></td>
+            <td><input id="upColor"  type="text" value="#3c3cc4" disabled="disabled" /></td>
+            <td>
+                <input type="button" id="upColorChoose" style="width:30px;height:20px;background-color:#3c3cc4" class="button" value="" onClick='fillColorDlg("upColor")'/>
+            </td>
+        </tr>
+        <tr>
+            <td><span>侧面颜色:</span></td>
+            <td>
+                <input id="sideColor"  type="text" disabled="disabled" value="#2020dd"  />
+            </td>
+            <td>
+                <input type="button" id="sideColorChoose" style="width:30px;height:20px;background-color:#2020dd" class="button" value="" onClick='fillColorDlg("sideColor")'/>
+            </td>
+        </tr>
+    </table>
+
+
+
+<div style="margin-top: 15px;text-align: center;" >
+    <button class="largeBtn" id="btnSet" >确定</button>
+</div>
+<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/plugins/jquery.easyui.min.js"></script>
+<script src="../../js/stamplib/analysis.js"></script>
+<script src="../../js/analysis/underground_water.js"></script>
+
+</body>
+</html>
+
+
+

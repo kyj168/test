@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>坡度分析</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/analysis.css"/>
+</head>
+
+<body>
+<table class="paramTable">
+    <tr>
+        <td>
+            <span>显示线宽:</span>
+        </td>
+        <td>
+            <input type="text" id="lineWidth" class="inputText" onpropertychange="checkPositiveInt(this)" value="1">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>分析半径:</span>
+        </td>
+        <td>
+            <input type="text" id="radius" class="inputText" onpropertychange="checkNum(this)" value="30">
+            <span class="afterInText">米</span>
+        </td>
+    </tr>
+</table>
+<div class="buttonTd">
+    <button id="ok">开始分析</button>
+    <button id="cancel">退出</button>
+</div>
+
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/common/common.js"></script>
+<script>
+    function getEarth(earth) {
+        $(function () {
+            $('#ok').on('click', function (e) {
+
+                var lineWidth = $('#lineWidth').val(),
+                    radius = $('#radius').val();
+                if (
+                    lineWidth == ''
+                    || isNaN(lineWidth)
+                    || radius == ''
+                    || isNaN(radius)
+                ) {
+                    alert('请输入数字');
+                    return;
+                }
+                earth.analysisObj.clear();
+                earth.Measure.MeasureSlope(lineWidth, parseInt('0xff0000'), radius);
+            });
+
+            $('#cancel').on('click', function (e) {
+                earth.htmlBallon.DestroyObject();
+            });
+            window.onunload = function () {
+                earth.analysisObj.clear();
+            }
+        });
+    }
+
+</script>
+</body>
+
+</html>

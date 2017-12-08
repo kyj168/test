@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <title>搜 索</title>
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/icon.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mCustomScrollbar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="../../js/plugins/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css">
+    <style type="text/css">
+        tr{
+            height: 27px;
+            line-height: 27px;
+        }
+        .selectLabel{
+            width: 100px;
+            float: right;
+            margin-top: -27px;
+        }
+        #searchData{
+            text-align: center;
+            overflow: hidden;
+        }
+        .pagination table{
+            margin-left: 21px;
+        }
+    </style>
+</head>
+
+<body id="container" class="easyui-layout" oncontextmenu="return false;">
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+<div id="northDiv" class="north" region="north"></div>
+<div id="tablediv" class="enter" region="center">
+    <div class="cardTitle">搜索结果</div>
+    <label class="selectLabel">
+        <input id="search_info" type="checkbox"/>
+        <span>详细信息</span>
+    </label>
+    <div style="clear: both;"></div>
+    <div id="dgDiv">
+        <div id="srcollDiv">
+            <div id="searchData"></div>
+        </div>
+        <div id="pageDiv">
+            <div id="page"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/plugins/jquery.easyui.min.js"></script>
+<script src="../../js/plugins/zTreeStyle/jquery.ztree.js"></script>
+<script src="../../js/plugins/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="../../js/plugins/jquery.xml2json.js"></script>
+<script src="../../js/stamplib/search.js"></script>
+<script src="../../js/stamplib/layer.js"></script>
+<script src="../../js/search/geoSearchResult.js"></script>
+</html>

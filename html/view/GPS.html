@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>运动物体</title>
+    <link rel="stylesheet" href="../../css/easyui/gray/easyui.css" />
+    <link rel="stylesheet" href="../../css/easyui/icon.css" />
+    <link rel="stylesheet" type="text/css" href="../../js/plugins/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="../../css/mCustomScrollbar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <script type="text/javascript" src="../../js/plugins/jquery1.9.0.min.js"></script>
+    <script type="text/javascript" src="../../js/plugins/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../js/plugins/zTreeStyle/jquery.ztree.js"></script>
+    <script type="text/javascript" src="../../js/plugins/jquery.xml2json.js"></script>
+    <script type="text/javascript" src="../../js/plugins/jquery.mCustomScrollbar.concat.min.js"></script>
+</head>
+<body id="container" class="easyui-layout" data-options="fit:true" style="height: 100%;">
+<div  region="north" id="northDiv">
+    <div class="cardTitle">参数设置</div>
+    <div id="paramSetInner">
+        <table class="panelTable">
+            <tr>
+                <td><span>运动对象:</span></td>
+                <td><select id="selDynamicObj"></select></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;height:28px;">
+                    <input type="radio" id="lbItem" name="lbItem" checked="checked" value="1" >
+                    <label for="lbItem">实时跟踪</label>
+                    <input type="radio" id="xyItem" name="xyItem" value="2">
+                    <label>历史轨迹</label>
+                </td>
+            </tr>
+            <tr>
+                <td><span>数据协议:</span></td>
+                <td>
+                    <select id="nema"  value="NMEA">
+                        <option selected >NEMA</option>
+                    </select >
+                </td>
+            </tr>
+            <tr>
+                <td><span>轮询间隔:</span></td>
+                <td>
+                    <input type="text" id="time" value="3" onkeyup="checkPositiveInt(this)"><span class="afterInText">秒</span>
+                </td>
+            </tr>
+            <tr>
+                <td><span>存储路径:</span></td>
+                <td>
+                    <input type="text" id="path" value="" disabled>
+                    <button id="pathSel" class="afterInText" onClick="addLink()">选择路径</button>
+                </td>
+            </tr>
+            <tr>
+                <td><span>选择文件:</span></td>
+                <td>
+                    <input type="text" id="hisPath"  value="" disabled>
+                    <button id="hisPathSel" class="afterInText" onClick="openLink()">选择路径</button>
+                </td>
+            </tr>
+        </table>
+        <div class="buttonDiv14">
+            <button id="btnEnter"  tag="enter" disabled>开始</button>
+            <button id="btnStop" tag="enter" disabled >停止</button>
+        </div>
+    </div>
+</div>
+<div id="tablediv" region="center"  border="false">
+    <div class="cardTitle">实时提示</div>
+    <div id="dgDiv">
+    </div>
+</div>
+<script type="text/javascript"  src="../../js/config/config.js"></script>
+<script type="text/javascript" src="../../js/common/common.js"></script>
+<script type="text/javascript" src="../../js/view/track.js"></script>
+<script>
+    var earth = parent.earth;
+    $(function (){
+        var trackManager = STAMP.TrackManager(earth);
+        var divHeight = $(parent.document).height() - 500;
+
+        //实时跟踪
+        $("#lbItem").click(function(){
+
+            $("#path").attr("disabled","disabled");
+
+            $("#time").removeAttr("disabled");
+            $("#nema").removeAttr("disabled");
+            $("#hisPath").removeAttr("disabled");
+        });
+
+        //历史轨迹
+        $("#xyItem").click(function(){
+           
+            $("#hisPath").attr("disabled","disabled");
+            $("#time").attr("disabled","disabled");
+            $("#nema").attr("disabled","disabled");
+
+            $("#path").removeAttr("disabled");
+
+        });
+        $("#dgDiv").height(divHeight);
+        // 初始化动态对象列表
+        trackManager.getDynamicObject(null,function (fly){
+            $("#selDynamicObj").append('<option value="' + fly.Guid + '">' + fly.Name + '</option>');
+        });
+        $("#lbItem ").click(function(){
+            $(this).removeAttr("checked") ;
+            $("#xyItem ").removeAttr("checked") ;
+            $(this).attr("checked","checked") ;
+            $("#geo").removeAttr("disabled") ;
+            $("#path").removeAttr("disabled") ;
+            $("#pathSel").removeAttr("disabled") ;
+            $("#shadow").attr("disabled","disabled") ;
+            $("#hisPath").attr("disabled","disabled") ;
+            $("#hisPathSel").attr("disabled","disabled") ;
+        });
+        $("#xyItem ").click(function(){
+            $(this).removeAttr("checked") ;
+            $("#lbItem ").removeAttr("checked") ;
+            $(this).attr("checked","checked") ;
+            $("#shadow").removeAttr("disabled") ;
+            $("#hisPath").removeAttr("disabled") ;
+            $("#hisPathSel").removeAttr("disabled") ;
+            $("#geo").attr("disabled","disabled") ;
+            $("#path").attr("disabled","disabled") ;
+            $("#pathSel").attr("disabled","disabled") ;
+        });
+        $("#chkDynamic").click(function(){
+            var lbItem=$('input:checkbox[name="chkDynamic"]').is(":checked");
+            if(lbItem){
+                $("#dynamicDiv").removeAttr("disabled") ;
+            } else {
+                $("#dynamicDiv").attr("disabled","disabled") ;
+            }
+
+        });
+        // region 动态物体
+        var track;
+        var time;//控制连接状态标签
+        function getGPSTrack(path){
+            var GPSTrackGuid = earth.Factory.CreateGUID();
+            var pathArr = path.split("\\");
+            var fileName = pathArr[pathArr.length-1];
+            var GPSTrackName = fileName.split(".")[0];
+            var GPSTrack = earth.Factory.CreateGPSTrack(GPSTrackGuid, GPSTrackName);
+            return GPSTrackGuid;
+        }
+        $("#btnEnter").click(function (){
+            $("#checkBntn div",window.top.document).attr("disabled", true);
+            var lbItem=$('input:radio[name="lbItem"]').is(":checked");
+            var xyItem=$('input:radio[name="xyItem"]').is(":checked");
+            var dynamicChk=$('input:checkbox[name="chkDynamic"]').is(":checked");
+            if(lbItem){
+                if($("#nema").val() === ""){
+                    alert("数据协议不能为空")
+                    return;
+                } else if($("#time").val() ==="" || $("#time").val() <=0 ){
+                    alert("轮询间隔不能为空和小于零")
+                    return;
+                }else if($("#path").val() === ""){
+                    alert("存储路径不能为空")
+                    return;
+                }
+                $("#nema,#time,#path,#geo,#lbItem").attr("disabled","disabled");
+            } else if(xyItem){
+                if($("#hisPath").val() === ""){
+                    alert("选择文件路径不能为空")
+                    return;
+                }
+                $("#hisPath,#xyItem,#xyChk,#shadow").attr("disabled","disabled");
+            } else if(dynamicChk){
+                $("#chkDynamic,#dynamicDiv,#dChk").attr("disabled","disabled");
+            }
+            $("#xyItem,#chkDynamic,#lbItem,#xyChk,#dChk,#GPSChecked").attr("disabled","disabled");
+            if($(this).text() == "开始"){
+                $(this).text("暂停");
+                //trackManager.enter($("#selDynamicObj").val(), function (){
+                //GPS轨迹自然状态下完成
+                earth.Event.OnGPSTrackFinished = function(){
+                    $("#checkBntn div",window.top.document).attr("disabled", false);
+                    clearInterval(time);
+                    var lbItem=$('input:radio[name="lbItem"]').is(":checked");
+                    var xyItem=$('input:radio[name="xyItem"]').is(":checked");
+                    var dynamicChk=$('input:checkbox[name="chkDynamic"]').is(":checked");
+                    if(lbItem){
+                        $("#nema,#time,#path,#geo,#lbItem").removeAttr("disabled");
+                    } else if(xyItem){
+                        $("#hisPath,#xyItem,#xyChk,#shadow").removeAttr("disabled");
+                    } else if(dynamicChk){
+                        $("#chkDynamic,#dynamicDiv,#dChk").removeAttr("disabled");
+                    }
+                    $("#xyItem,#chkDynamic,#lbItem,#xyChk,#dChk,#GPSChecked").removeAttr("disabled");
+                    $("#comList").empty();
+                    $("#btnStop").attr("disabled", "disabled");
+                    $("#btnEnter").text("开始");
+                    $("#selDynamicObj").removeAttr("disabled");
+                    $("#btnEnter").removeAttr("disabled");
+                    if(track)
+                    {
+                        track.Stop();
+                    }
+                };
+                
+                earth.Event.OnDocumentChanged = function(type,guidd){
+                    if(type!="3"){
+                        var guid = getGPSTrack($("#path").val());
+                        if(lbItem){
+                            
+                            track = earth.GPSTrackControl.GetTrack(guid);
+                            track.ConnectInformation = true; // true-需要com false-file
+                            //track.Baud = 4800;      // 串口比特率,默认4800
+                            //track.ComName = $("#com").val(); // 串口名称，默认COM3
+                            track.OutputPathName = $("#path").val(); // nmea文件存储位置，存放接收到的GPS信息
+                            track.QueryInterval = $("#time").val(); // 从GPS获取数据的时间间隔，单位:秒
+                            //if(dynamicChk){
+                            track.BindObject = $("#selDynamicObj").val();
+                            /*} else {
+                             earth.DynamicSystem.UnLoadDynamicObject($("#selDynamicObj").val());   //卸载运动物体对象
+                             track.BindObject ="";
+                             }*/
+                            //xianshi未连接的初始状态，setInterval时间调成很小也可，效果不明显
+                            $("#comList").empty();
+                            $("#comList").append('<div><label>'+track.ConnectInformation+'</label></div>');
+                            time = setInterval(function (){
+                                var conectTag = track.ConnectInformation ;
+                                conectTag=conectTag+"....";
+                                $("#comList").empty();
+                                $("#comList").append('<div><label>'+conectTag+'</label></div>');
+                            },100) ;
+                        }else {
+
+                            track = earth.GPSTrackControl.GetTrack(guid);
+                            track.DataType = 2;
+                            track.TrackType = 1;
+                            //track.ConnectInformation = false; // true-需要com false-file
+                            track.SourcePathName = $("#hisPath").val();
+                            //if(dynamicChk){
+                            track.BindObject = $("#selDynamicObj").val();
+                           
+                            track.InitFollowTrack(180, 0, 1, 5);
+                            /* } else {
+                             earth.DynamicSystem.UnLoadDynamicObject($("#selDynamicObj").val());   //卸载运动物体对象
+                             track.BindObject ="";
+                             }*/
+                        }
+                        track.Play();
+                        earth.GPSTrackControl.SetMainTrack(guid, 3);//跟随模式1:一人称视角和3：三人称
+
+                        $("#btnStop").removeAttr("disabled");
+                    }
+
+                   // $("#btnEnter").attr("disabled", "disabled");
+               // });
+                }
+                earth.DynamicSystem.LoadDynamicObject($("#selDynamicObj").val());
+            }else if($(this).text() == "暂停"){
+                $(this).text("继续");
+                track.Pause();
+            } else {
+                $(this).text("暂停");
+                track.Resume();
+            }
+        });
+        $("#btnStop").click(function (){
+            $("#checkBntn div",window.top.document).attr("disabled", false);
+            clearInterval(time);
+            var lbItem=$('input:radio[name="lbItem"]').is(":checked");
+            var xyItem=$('input:radio[name="xyItem"]').is(":checked");
+            var dynamicChk=$('input:checkbox[name="chkDynamic"]').is(":checked");
+            if(lbItem){
+                $("#nema,#time,#path,#geo,#lbItem").removeAttr("disabled");
+            } else if(xyItem){
+                $("#hisPath,#xyItem,#xyChk,#shadow").removeAttr("disabled");
+            } else if(dynamicChk){
+                $("#chkDynamic,#dynamicDiv,#dChk").removeAttr("disabled");
+            }
+            $("#xyItem,#chkDynamic,#lbItem,#xyChk,#dChk,#GPSChecked").removeAttr("disabled");
+            $("#comList").empty();
+            $("#btnStop").attr("disabled", "disabled");
+            $("#btnEnter").text("开始");
+            $("#selDynamicObj").removeAttr("disabled");
+            $("#btnEnter").removeAttr("disabled");
+            //trackManager.out($("#selDynamicObj").val());
+            if(track){
+                track.Stop();
+            }
+            trackManager.out($("#selDynamicObj").val());
+        });
+
+        window.onunload = function (){
+            //if($("#btnEnter").attr("tag") == "out"){
+            track = earth.GPSTrack;
+            if(track){
+                track.Stop();
+            }
+            if(earth.GlobeObserver){
+                trackManager.out($("#selDynamicObj").val());
+            }
+        };
+        // endregion
+    });
+    function addLink() {
+        var filePath = earth.UserDocument.SaveFileDialog("","*.nmea","nmea");
+        if (filePath == "")
+            return;
+        document.getElementById("path").value = filePath;
+        $("#btnEnter").attr("disabled", false);
+    }
+    function openLink(){
+        var filePath = earth.UserDocument.OpenFileDialog(earth.RootPath,"*.nmea");
+        if (filePath == "")
+            return;
+        document.getElementById("hisPath").value = filePath;
+        $("#btnEnter").attr("disabled", false);
+    }
+
+</script>
+</body>
+</html>

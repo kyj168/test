@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.5D出图</title>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/analysis.css" />
+</head>
+<body>
+<table class="paramTable"> 
+    <tr>
+        <td>
+            <span>图片DPI:</span>
+        </td>
+        <td>
+            <input id="amount" type="text" onpropertychange="checkPositiveInt(this)" value="3000"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>图片高度:</span>
+        </td>
+        <td>
+            <input id="height" type="text" onpropertychange="checkPositiveInt(this)" value="480"/><span class="afterInText">像素</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>图片宽度:</span>
+        </td>
+        <td>
+            <input id="width" type="text" onpropertychange="checkPositiveInt(this)" value="640"/><span class="afterInText">像素</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>出图间隔:</span>
+        </td>
+        <td>
+            <input id="sec" type="text" onpropertychange="checkNum(this)" value="0.5"/><span class="afterInText">秒</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>相机朝向:</span>
+        </td>
+        <td>
+            <input id="heading" type="text" onpropertychange="checkNum(this)" /><span class="afterInText">度</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>相机俯仰:</span>
+        </td>
+        <td>
+            <input id="tilt" type="text" onpropertychange="checkNum(this)" /><span class="afterInText">度</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>相机高度:</span>
+        </td>
+        <td>
+            <input id="range" type="text" onpropertychange="checkNum(this)" /><span class="afterInText">米</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>路径文件:</span>
+        </td>
+        <td>
+            <input id="path" type="text" disabled/>
+            <button class="afterInText" id="select">选择路径</button>
+        </td>
+    </tr>
+</table>
+
+<div class="buttonTd">
+    <button id="btn_set_sector">设置姿态</button>
+    <button id="cameraPose"  >相机姿态</button><br/>
+</div>
+
+<div class="buttonTd14">
+    <button id="btn_select_sector" disabled >选取范围</button>
+    <button id="btnStart" disabled>开始</button>
+</div>
+<script type="text/javascript" src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script type="text/javascript" src="../../js/common/common.js"></script>
+<script type="text/javascript" src="../../js/view/pictures.js"></script>
+</body>
+</html>

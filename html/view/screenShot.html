@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>屏幕截图</title>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/analysis.css">
+</head>
+<body>
+    <table class="paramTable">
+        <tr>
+            <td>
+                <span>图片高度: </span>
+            </td>
+            <td>
+                <input id="height" type="text" onpropertychange="checkPositiveInt(this)" class="inputText" /><span class="afterInText">像素</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>图片宽度: </span>
+            </td>
+            <td>
+                <input id="width" type="text" onpropertychange="checkPositiveInt(this)" class="inputText" /><span class="afterInText">像素</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>存储路径:</span>
+            </td>
+            <td>
+                <input id="path"  type="text" type="text" class="inputText" disabled/>
+                <button id="select" class="afterInText">选择路径</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>拉伸方式:</span>
+            </td>
+            <td>
+                <select name="shotWay" id="shotWay" class="selectM">
+                    <option value="0">拉伸</option>
+                    <option value="1">裁剪</option>
+                    <option value="2">平铺</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="colTdRight">
+                <input type="checkbox" name="isFloatSelect" id="isFloatSelect">
+                <label for="isFloatSelect">浮动窗口</label>
+            </td>
+        </tr>
+    </table>
+    <div class="buttonTd">
+        <button id="btn_select_sector" disabled>确定</button>
+        <button id="clear">退出</button>
+    </div>
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/common/common.js"></script>
+<script src="../../js/view/screenShot.js"></script>
+</body>
+</html>

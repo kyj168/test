@@ -1,0 +1,84 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>挖填方分析</title>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/analysis.css"/>
+    <style>
+        .paramTable input[type="radio"]{
+            margin: 0 4px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+<table class="paramTable">
+    <tr>
+        <td>
+            <input type="radio" name="excaveWay" id="customer" checked="checked">
+            <label for="customer">绝对高程开挖:</label>
+        </td>
+        <td>
+            <input id="altitude" type="text" class="inputText" value="5"/>
+        </td>
+        <td>
+            <span>米</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="radio" name="excaveWay" id="importShp">
+            <label for="importShp">矢量面开挖:</label>
+        </td>
+        <td>
+            <input id="shpPath" type="text" class="inputText" disabled/>
+        </td>
+        <td>
+            <button class="afterInText" id="shpFile">选取文件</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>挖方结果:</span>
+        </td>
+        <td>
+            <input id="wafang" type="text" class="inputText" value="0" disabled/>
+        </td>
+        <td>
+            <span class="afterInText">立方米</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>填方结果:</span>
+        </td>
+        <td>
+            <input id="tianfang" type="text" class="inputText" value="0" disabled/>
+        </td>
+        <td>
+            <span class="afterInText">立方米</span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" class="colTdRight">
+            <input id="digDem" name="type" type="checkbox"/>
+            <label for="digDem">开挖地面模型</label>
+            <input id="chkDem" name="type" type="checkbox" checked="checked"/>
+            <label for="chkDem">生成辅助模型</label>
+        </td>
+    </tr>
+</table>
+<div class="buttonTd">
+    <button id="btnStart">开始分析</button>
+    <button id="clear">退出</button>
+</div>
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="width:0px;height:0px;"></object>
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/stamplib/analysis.js"></script>
+<script src="../../js/stamplib/export.js"></script>
+<script src="../../js/analysis/excavationAndFill.js"></script>
+</body>
+
+</html>

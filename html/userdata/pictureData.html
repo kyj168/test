@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>图片</title>
+	<link rel="stylesheet" href="../../css/common.css" type="text/css"/>
+	<style type="text/css" media="screen">
+		body,td {
+			margin-top:15px;
+			font-size:12px;
+		}
+		body .colorwell-selected {
+			border: 2px solid #000;
+			font-weight: bold;
+		}
+		button{ width: 65px; height: 30px; margin: 5px 10px;}
+	</style>
+</head>
+
+<body onLoad="attribute()" onunload="unloadPictureWindow()">
+<center>
+	<table>
+		<tr>
+			<td align="right">名称:</td>
+			<td align="left"><input id="billboardName" type="text" style="width:169px;" value="picture"/></td>
+		</tr>
+		<tr>
+			<td align="right">
+				<!-- <img id="iconId" src="" height="32px" width="32px" /> -->
+				图片:<font id="iconId"></font>
+				<input type="file" id="file" style="display:none">
+			</td>
+			<td align="left">
+				<input id="iconValue" style="width:169px; margin-top: 5px;" type="text"/>
+				<!--<input type="button" class="button" value="浏览" onClick="addIcon()"/>-->
+				<img src="../../images/dialog/file.png" id="view" width="25" height="25" style="float: right; margin-left: 5px; margin-top: 3px;" onClick="addIcon()" />
+			</td>
+		</tr>
+		<tr>
+		<tr>
+			<td align="right">宽度:</td>
+			<td align="left">
+				<input id="width" type="text" style="width:169px; margin-top: 5px;" value="1"/>&nbsp;米				</td>
+		</tr>
+		<tr>
+			<td align="right">高度:</td>
+			<td align="left">
+				<input id="height" type="text" style="width:169px; margin-top: 5px;" value="1"/>&nbsp;米				</td>
+		</tr>
+		<!-- <tr>
+            <td align="right">可见高度:</td>
+            <td>
+                <input id="maxHeight" type="text" value="5000.0" style="width:169px;"/>&nbsp;米				</td>
+        </tr> -->
+		<tr>
+			<td align="right">描述:</td>
+			<td align="left"><textarea name="textarea" cols="30" rows="5" id="description" style="width:169px; margin-top: 5px;"></textarea></td>
+		</tr>
+		<tr>
+			<td align="center" colspan="2" height="40px;">
+				<!--<input id="buttAdd" type="button" class="normalButton" value="确定" onClick="billboard_submit()" disabled/>&nbsp;
+                <input type="button" class="normalButton" value="取消" onClick="billboard_close()"/>-->
+				<button id="buttAdd" class="largeBtn" onClick="billboard_submit()" disabled>确定</button>
+				<button id="clear" class="largeBtn" onClick="billboard_close()">取消</button>
+			</td>
+		</tr>
+	</table>
+</center>
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+<script type="text/javascript" src="../../js/userdata/pictureData.js"></script>
+</body>
+</html>

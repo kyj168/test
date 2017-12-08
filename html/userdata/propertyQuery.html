@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>属性查看</title>
+    <link rel="stylesheet" href="../../css/common.css" />
+    <link rel="stylesheet" href="../../css/easyui/icon.css" />
+    <link rel="stylesheet" href="../../css/easyui/gray/easyui.css" />
+    <style>
+    body {
+        margin: 0px;
+        padding: 0px;
+        font-size: 12px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+    .col {
+        text-align: center;
+        border-bottom: 1px solid #d3d3d3;
+    }
+    .w25p {
+        width: 30%;
+        text-align: left;
+        padding-right: 30px;
+        height: 30px;
+    }
+    .w75p {
+        width: 70%;
+        text-align: left;
+        padding-left: 30px;
+        height: 30px;
+    }
+    .w40p {
+        width: 40%;
+        text-align: left;
+        padding-left: 25px;
+        height: 30px;
+    }
+    .w60p {
+        width: 60%;
+        text-align: left;
+        height: 30px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="divPointResult" style="background:#eef5fd;">
+        <table id="tblPointResult"></table>
+    </div>
+    <div id="divLineResult" class="easyui-tabs">
+        <div title="管线属性">
+            <table id="tblLineResult"></table>
+        </div>
+        <div title="起点属性">
+            <table id="tblStartPointResult"></table>
+        </div>
+        <div title="终点属性">
+            <table id="tblEndPointResult"></table>
+        </div>
+    </div>
+    <object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+    <script type="text/javascript" src="../../js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../../js/lib/jquery.xml2json.js"></script>
+    <script type="text/javascript" src="../../js/lib/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../js/query/FileValueStringMap.js"></script>
+    <script type="text/javascript">
+    /**
+     * 屏蔽右键菜单
+     */
+    document.oncontextmenu = function() {
+        event.returnValue = false;
+    };
+    var earth = parent.earth;
+    var pipeConfigDoc = null;
+    var pipeConfigLink = null;
+    var pipeDatum = null;
+    $(function() {
+        var parseLocation = function() {
+            var urlSegs = location.href.split("?");
+            var params;
+            var keyvalue = null;
+            var results = {};
+            if (urlSegs.length > 1) {
+                params = urlSegs[1].split("&");
+                for (var i = 0; i < params.length; i++) {
+                    keyvalue = params[i].split("=");
+                    results[keyvalue[0]] = keyvalue[1];
+                }
+            }
+            return results;
+        };
+        var getCoordinates2 = function(layerID, str1, str2) {
+            var strPara = "(or,equal,US_KEY," + str1 + "),(or,equal,US_KEY," + str2 + ")";
+            var layer = earth.LayerManager.GetLayerByGUID(layerID);
+            var strConn = layer.GISServer + "dataquery?service=" + layerID + "&qt=17&dt=point&pc=" + strPara + "&pg=0,100";
+            var xmlDoc = loadXMLStr(strConn);
+            return xmlDoc;
+        };
+
+        var getCoordinates = function(xmlDoc, layerID, str) {
+            var v3s = null;
+            v3s = getPlaneCoordinates(layerID, xmlDoc, str);
+            return v3s;
+        };
+
+        var getTempParams = function(xmlDoc, str) {
+            var params = parseResult2(xmlDoc, str);
+            return params;
+        };
+
+        var getPointCoordinates = function(layerID, str) {
+            var v3s = null;
+            var strPara = "(and,equal,US_KEY,";
+            strPara += str;
+            strPara += ")";
+            var layer = earth.LayerManager.GetLayerByGUID(layerID);
+            var strConn = layer.GISServer + "dataquery?service=" + layerID + "&qt=1&dt=point&pc=" + strPara + "&pg=0,100";
+            var xmlDoc = loadXMLStr(strConn);
+            v3s = getPlaneCoordinates(layerID, xmlDoc, str);
+            return v3s;
+        };
+
+        var initObjValue = function(key, layer) {
+            $("#tblPointResult").append('<tr><td class="col w40p">所属图层</td><td class="col w60p">' + layer.Name + '</td></tr>');
+            $("#tblPointResult").append('<tr><td class="col w40p">编号</td><td class="col w60p">' + key + '</td></tr>');
+        };
+
+        var initPointValue = function(layerID, record, layerName, layerID) {
+            var str = record.US_KEY;
+            var v3s = getPointCoordinates(layerID, str);
+            var X = (parseFloat(v3s.X)).toFixed(3);
+            var Y = (parseFloat(v3s.Y)).toFixed(3);
+            var altitude = (parseFloat(record.US_PT_ALT)).toFixed(3);
+            initPipeConfigDoc(layerID, true, true); //初始化编码映射文件对象, 不初始化空间坐标转换对象
+
+            $("#tblPointResult").append('<tr><td class="col w40p">所属图层</td><td class="col w60p">' + layerName + '</td></tr>');
+            $("#tblPointResult").append('<tr><td class="col w40p">管线标识</td><td class="col w60p">' + record.US_KEY + '</td></tr>');
+            $("#tblPointResult").append('<tr><td class="col w40p">地面高程</td><td class="col w60p">' + altitude + '</td></tr>');
+            var pointType = getValueByCode("CPointCodes", record.US_PT_TYPE);
+            if (pointType != "") {
+                $("#tblPointResult").append('<tr><td class="col w40p">特征</td><td class="col w60p">' + pointType + '</td></tr>');
+            }
+            var attachment = getValueByCode("AttachmentCode", record.US_ATTACHM);
+            if (attachment != "") {
+                $("#tblPointResult").append('<tr><td class="col w40p">附属物</td><td class="col w60p">' + attachment + '</td></tr>');
+            }
+            // TODO: 道路名称字段需要动态获取
+            if (record.PROAD != null || record.PROAD != undefined) {
+                $("#tblPointResult").append('<tr><td class="col w40p">道路名称</td><td class="col w60p">' + record.PROAD + '</td></tr>');
+            }
+            $("#tblPointResult").append('<tr><td class="col w40p">X坐标</td><td class="col w60p">' + X + '</td></tr>');
+            $("#tblPointResult").append('<tr><td class="col w40p">Y坐标</td><td class="col w60p">' + Y + '</td></tr>');
+        };
+        var initPointOnLineValue = function(layerID, record, layerName, type, tableName, v3s, params) {
+            //StatisticsMgr.initPipeConfigDoc(layerID, true, true); //初始化编码映射文件对象, 不初始化空间坐标转换对象
+            var pointType = getValueByCode("CPointCodes", params.US_PT_TYPE);
+            var X = (parseFloat(v3s.X)).toFixed(3);
+            var Y = (parseFloat(v3s.Y)).toFixed(3);
+            var altitude = (parseFloat(params.US_PT_ALT)).toFixed(3);
+            var sdeep = (parseFloat(record.US_SDEEP)).toFixed(3);
+            var edeep = (parseFloat(record.US_EDEEP)).toFixed(3);
+            var sAlt = (parseFloat(record.US_SALT)).toFixed(3);
+            var eAlt = (parseFloat(record.US_EALT)).toFixed(3);
+            $("#" + tableName).append('<tr><td class="col w75p">所属图层</td><td class="col w25p">' + layerName + '</td></tr>');
+            $("#" + tableName).append('<tr><td class="col w75p">管点标识</td><td class="col w25p">' + (type == 0 ? record.US_SPT_KEY : record.US_EPT_KEY) + '</td></tr>');
+            $("#" + tableName).append('<tr><td class="col w75p">地面高程</td><td class="col w25p">' + altitude + '</td></tr>');
+            $("#" + tableName).append('<tr><td class="col w75p">特征</td><td class="col w25p">' + pointType + '</td></tr>');
+            if (record.US_ATTACHM) {
+                var attachment = getValueByCode("AttachmentCode", record.US_ATTACHM);
+                $("#" + tableName).append('<tr><td class="col w75p">附属物</td><td class="col w25p">' + attachment + '</td></tr>');
+            }
+            var road = null;
+            if (!record.PROAD) {
+                road = "";
+            } else {
+                road = record.PROAD;
+            }
+            $("#" + tableName).append('<tr><td class="col w75p">道路名称</td><td class="col w25p">' + road + '</td></tr>');
+            if (type == 0) {
+                $("#" + tableName).append('<tr><td class="col w75p">起点埋深</td><td class="col w25p">' + sdeep + '</td></tr>');
+                $("#" + tableName).append('<tr><td class="col w75p">管顶/底高程</td><td class="col w25p">' + sAlt + '</td></tr>');
+            } else {
+                $("#" + tableName).append('<tr><td class="col w75p">终点埋深</td><td class="col w25p">' + edeep + '</td></tr>');
+                $("#" + tableName).append('<tr><td class="col w75p">管顶/底高程</td><td class="col w25p">' + eAlt + '</td></tr>');
+            }
+            $("#" + tableName).append('<tr><td class="col w75p">X坐标</td><td class="col w25p">' + X + '</td></tr>');
+            $("#" + tableName).append('<tr><td class="col w75p">Y坐标</td><td class="col w25p">' + Y + '</td></tr>');
+        };
+        var initLineValue = function(layerID, record, layerName) {
+            initPipeConfigDoc(layerID, true, true); //初始化编码映射文件对象, 不初始化空间坐标转换对象
+            var material = getValueByCode("Materials", record.US_PMATER); //管线材质
+            var lineType = FieldValueStringMap.GetFieldValueString("US_LTTYPE", record.US_LTTYPE); //埋设类型
+            var diam = parseInt(record.US_PDIAM);
+            var width = (parseFloat(record.US_PWIDTH)).toFixed(3);
+            var height = (parseFloat(record.US_PHEIGHT)).toFixed(3);
+            $("#tblLineResult").append('<tr><td class="col w75p">所属图层</td><td class="col w25p">' + layerName + '</td></tr>');
+            $("#tblLineResult").append('<tr><td class="col w75p">管线标识</td><td class="col w25p">' + record.US_KEY + '</td></tr>');
+            if (record.US_PDIAM != 0) {
+                $("#tblLineResult").append('<tr><td class="col w75p">圆管半径</td><td class="col w25p">' + diam + '</td></tr>');
+            } else {
+                $("#tblLineResult").append('<tr><td class="col w75p">方管宽度</td><td class="col w25p">' + width + '</td></tr>');
+                $("#tblLineResult").append('<tr><td class="col w75p">方管高度</td><td class="col w25p">' + height + '</td></tr>');
+            }
+            // TODO: 需要将编码转为中文说明
+            $("#tblLineResult").append('<tr><td class="col w75p">管道材质</td><td class="col w25p">' + material + '</td></tr>');
+            $("#tblLineResult").append('<tr><td class="col w75p">埋设方式</td><td class="col w25p">' + lineType + '</td></tr>');
+            if (record.SURVEY_DAT != null || record.SURVEY_DAT != undefined) {
+                $("#tblLineResult").append('<tr><td class="col w75p">普查年代</td><td class="col w25p">' + record.SURVEY_DAT + '</td></tr>');
+            }
+            if (record.BELONG != null || record.BELONG != undefined) {
+                $("#tblLineResult").append('<tr><td class="col w75p">权属单位</td><td class="col w25p">' + record.BELONG + '</td></tr>');
+            }
+            var layer = earth.LayerManager.GetLayerByGUID(layerID);
+            var intLayerCode = layer.PipeLineType;
+            if (intLayerCode >= 6000 && intLayerCode < 7000) {
+                if (record.FLOW_DIR != null || record.FLOW_DIR != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">管内流向</td><td class="col w25p">' + record.FLOW_DIR + '</td></tr>');
+                }
+            }
+            //电信
+            if (intLayerCode >= 2000 && intLayerCode < 3000) {
+                if (record.CAB_NUM != null || record.FLOW_DIR != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">电缆条数</td><td class="col w25p">' + record.CAB_NUM + '</td></tr>');
+                }
+                if (record.TOTAL_HOLE != null || record.TOTAL_HOLE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">总孔数</td><td class="col w25p">' + record.TOTAL_HOLE + '</td></tr>');
+                }
+                if (record.USED_HOLE != null || record.USED_HOLE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">已用孔数</td><td class="col w25p">' + record.USED_HOLE + '</td></tr>');
+                }
+            }
+            //电力
+            if (intLayerCode >= 1000 && intLayerCode < 2000) {
+                if (record.VOLTAGE != null || record.VOLTAGE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">压力/电压</td><td class="col w25p">' + record.VOLTAGE + '</td></tr>');
+                }
+                if (record.CAB_NUM != null || record.FLOW_DIR != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">电缆条数</td><td class="col w25p">' + record.CAB_NUM + '</td></tr>');
+                }
+                if (record.TOTAL_HOLE != null || record.TOTAL_HOLE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">总孔数</td><td class="col w25p">' + record.TOTAL_HOLE + '</td></tr>');
+                }
+                if (record.USED_HOLE != null || record.USED_HOLE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">已用孔数</td><td class="col w25p">' + record.USED_HOLE + '</td></tr>');
+                }
+            }
+            //排水
+            if (intLayerCode >= 4000 && intLayerCode < 5000) {
+                if (record.FLOW_DIR != null || record.FLOW_DIR != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">管内流向</td><td class="col w25p">' + record.FLOW_DIR + '</td></tr>');
+                }
+            }
+            //工业
+            if (intLayerCode >= 7000 && intLayerCode < 8000) {
+                if (record.VOLTAGE != null || record.VOLTAGE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">压力/电压</td><td class="col w25p">' + record.VOLTAGE + '</td></tr>');
+                }
+                if (record.FLOW_DIR != null || record.FLOW_DIR != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">管内流向</td><td class="col w25p">' + record.FLOW_DIR + '</td></tr>');
+                }
+            }
+            //燃气
+            if (intLayerCode >= 5000 && intLayerCode < 6000) {
+                if (record.VOLTAGE != null || record.VOLTAGE != undefined) {
+                    $("#tblLineResult").append('<tr><td class="col w75p">压力/电压</td><td class="col w25p">' + record.VOLTAGE + '</td></tr>');
+                }
+            }
+            initCustomValue(layerID, record);
+            var str1 = record.US_SPT_KEY;
+            var str2 = record.US_EPT_KEY;
+
+            var xmlDoc = getCoordinates2(layerID, str1, str2);
+
+            var v3s1 = getCoordinates(xmlDoc, layerID, str1);
+            var params1 = getTempParams(xmlDoc, str1);
+
+            var v3s2 = getCoordinates(xmlDoc, layerID, str2);
+            var params2 = getTempParams(xmlDoc, str2);
+
+            initPointOnLineValue(layerID, record, layerName, 0, "tblStartPointResult", v3s1, params1);
+            initPointOnLineValue(layerID, record, layerName, 1, "tblEndPointResult", v3s2, params2);
+        };
+
+        function initCustomValue(layerID, record) {
+            var configUrl = "http://" + pipeConfigLink.substr(2).replace("/", "/sde?").replace("PipeConfig.config", "FieldMap.config") + "_sde";
+            var systemDoc = loadXMLStr(configUrl);
+            var jsonData = $.xml2json(systemDoc);
+            if (jsonData != null) {
+                var lineFieldMap = jsonData.LineFieldMap;
+                if (lineFieldMap.UserDefine != null && lineFieldMap.UserDefine != undefined && lineFieldMap.UserDefine.FieldMapItem != null && lineFieldMap.UserDefine.FieldMapItem != undefined) {
+                    var count = lineFieldMap.UserDefine.FieldMapItem.length;
+                    if (count == 0 || count == undefined) {
+                        //for(var i=0;i<lineFieldMap.UserDefine.FieldMapItem.length;i++){
+                        var fidldCaption = lineFieldMap.UserDefine.FieldMapItem.FieldCaption;
+                        var fieldMapitem = lineFieldMap.UserDefine.FieldMapItem.FieldName;
+                        fieldMapitem = fieldMapitem.toUpperCase();
+                        if (record[fieldMapitem] != "") {
+                            $("#tblLineResult").append('<tr><td class="col w75p">' + fidldCaption + '</td><td class="col w25p">' + record[fieldMapitem] + '</td></tr>');
+                        }
+                        // }
+                    } else {
+                        for (var i = 0; i < lineFieldMap.UserDefine.FieldMapItem.length; i++) {
+                            var fidldCaption = lineFieldMap.UserDefine.FieldMapItem[i].FieldCaption;
+                            var fieldMapitem = lineFieldMap.UserDefine.FieldMapItem[i].FieldName;
+                            fieldMapitem = fieldMapitem.toUpperCase();
+                            if (record[fieldMapitem] != "") {
+                                if (parseInt(record[fieldMapitem]) == 0) {
+                                    $("#tblLineResult").append('<tr><td class="col w75p">' + fidldCaption + '</td><td class="col w25p"></td></tr>');
+                                } else {
+                                    $("#tblLineResult").append('<tr><td class="col w75p">' + fidldCaption + '</td><td class="col w25p">' + record[fieldMapitem] + '</td></tr>');
+                                }
+                            } else {
+                                $("#tblLineResult").append('<tr><td class="col w75p">' + fidldCaption + '</td><td class="col w25p">   </td></tr>');
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        /**
+         *获取平面坐标
+         */
+        function getPlaneCoordinates(layerID, data, usKey) {
+            var Record = null;
+            var jsonData = $.xml2json(data);
+            if (!jsonData.Result || jsonData.Result.num == 0 || jsonData == null) {
+                return;
+            } else if (jsonData.Result.num == 1) {
+                Record = jsonData.Result.Record;
+                if (jsonData.Result.Record.US_KEY != usKey) {
+                    return false;
+                }
+            } else if (jsonData.Result.num > 1) {
+                for (var i = 0; i < jsonData.Result.num; i++) {
+                    if (jsonData.Result.Record[i].US_KEY != usKey) {
+                        continue;
+                    } else {
+                        Record = jsonData.Result.Record[i];
+                    }
+                }
+            }
+            var Coordinates = Record.SHAPE.Point.Coordinates;
+            var coord = Coordinates.split(" ");
+            var coordinate1 = coord[0].split(",");
+            var Coordinate = transformToPlaneCoordinates(layerID, coordinate1);
+            return Coordinate;
+        }
+
+        function parseResult2(data, usKey) {
+            var Record = null;
+            var json = $.xml2json(data);
+            if (json == null || !json.Result) {
+                alert("查询结果不存在，请重新查询！");
+                return;
+            }
+            var count = json.Result.num;
+            if (count == 0) {
+                alert("查询结果不存在，请重新查询！");
+                return false;
+            } else if (count == 1) {
+                Record = json.Result.Record;
+                if (json.Result.Record.US_KEY != usKey) {
+                    return false;
+                }
+            } else {
+                for (var i = 0; i < count; i++) {
+                    if (json.Result.Record[i].US_KEY != usKey) {
+                        continue;
+                    } else {
+                        Record = json.Result.Record[i];
+                    }
+                }
+            }
+            if (Record == null) {
+                return false;
+            }
+            return Record;
+        }
+
+        /**
+         *经纬度转平面坐标
+         */
+        function transformToPlaneCoordinates(layerId, coord) {
+            var datum = pipeDatum;
+            /*  var datum = CoordinateTransform.createDatum(); */
+            var v3s1 = datum.des_BLH_to_src_xy(coord[0], coord[1], coord[2]); //经纬度转平面坐标
+            return v3s1;
+        }
+
+        /**
+         * 发送异步请求，查询符合条件的管线数据
+         * @param queryURL   查询地址
+         * @param type       类型：point或者line
+         * @param layerID    图层GUID
+         */
+        function loadXMLStr(xmlStr) {
+            var xmlDoc;
+            try {
+                if (window.ActiveXObject || window.ActiveXObject.prototype) {
+                    var activeX = ['Microsoft.XMLDOM', 'MSXML5.XMLDOM', 'MSXML.XMLDOM', 'MSXML2.XMLDOM', 'MSXML2.DOMDocument'];
+                    for (var i = 0; i < activeX.length; i++) {
+                        try {
+                            xmlDoc = new ActiveXObject(activeX[i]);
+                            xmlDoc.async = false;
+                            break;
+                        } catch(e) {
+                            continue;
+                        }
+                    }
+                    if (/http/ig.test(xmlStr.substring(0, 4))) {
+                        xmlDoc.load(xmlStr);
+                    } else {
+                        xmlDoc.loadXML(xmlStr);
+                    }
+                } else if (document.implementation && document.implementation.createDocument) {
+                    xmlDoc = document.implementation.createDocument('', '', null);
+                    xmlDoc.loadXml(xmlStr);
+                } else {
+                    xmlDoc = null;
+                }
+            } catch (exception) {
+                xmlDoc = null;
+            }
+
+            return xmlDoc;
+        }
+
+        var query = function(queryURL, layerID, layerName, bLine) {
+            //        $("#QueryProperty").removeClass("selected");
+            var xmlDoc = loadXMLStr(queryURL);
+            var json = $.xml2json(xmlDoc);
+            if (json == null || !json.Result) {
+                alert("查询结果不存在，请重新查询！");
+                return;
+            }
+            var records = null;
+            var num = json.Result.num;
+            if (num == 0) {
+                alert("查询结果不存在，请重新查询！");
+                return;
+            } else if (num == 1) {
+                records = json.Result.Record;
+            } else {
+                records = json.Result.Record[0];
+            }
+            if (bLine) {
+                $("#divPointResult").hide();
+                $("#divLineResult").show();
+                initLineValue(layerID, records, layerName);
+            } else {
+                $("#divPointResult").show();
+                $("#divLineResult").hide();
+                initPointValue(layerID, records, layerName, layerID);
+            }
+        };
+        var params = parseLocation();
+        var cArr = params.c.split("_");
+        var layer = earth.LayerManager.GetLayerByGUID(cArr[0]);
+        if (cArr.length > 1) {
+            var strPara = "(and,equal,US_KEY," + params.key + ")"; // + "&pg=0,30";
+            var bLine = params.c.indexOf("container") > -1;
+            var param = layer.QueryParameter;
+            param.Filter = strPara;
+            //    param.ClearSpatialFilter();
+            param.QueryType = 16; // SE_AttributeData
+            param.QueryTableType = (bLine ? 1 : 0);
+            param.PageRecordCount = 1;
+            var result = layer.SearchFromGISServer();
+            query(result.GotoPage(0), layer.Guid, layer.Name, bLine);
+        } else {
+            $("#divPointResult").show();
+            $("#divLineResult").hide();
+            initObjValue(params.key, layer);
+        }
+
+        /**
+         * 功能：根据管线图层ID初始化该管线的编码映射文件对象和空间参考对象
+         * 参数：layerId - 管线图层ID; isInitDoc-是否初始化管线的编码映射文件对象; isInitDatum-是否初始化管线的空间参考对象
+         * 返回：无
+         */
+        function initPipeConfigDoc(layerId, isInitDoc, isInitDatum) {
+            if (layerId.indexOf("_") > 0) {
+                layerId = layerId.split("_")[0];
+            }
+            var layer = earth.LayerManager.GetLayerByGUID(layerId);
+            var projectSetting = layer.ProjectSetting;
+            var layerLink = projectSetting.PipeConfigFile;
+            pipeConfigLink = layerLink;
+            if (isInitDoc == true) { //初始化管线编码映射文件对象
+                var configUrl = "http://" + layerLink.substr(2).replace("/", "/sde?") + "_sde";
+                pipeConfigDoc = loadXMLStr(configUrl); //初始化编码映射文件对象
+            }
+
+            if (isInitDatum == true) { //初始化管线空间参考对象
+                var spatialUrl = "http://" + projectSetting.SpatialRefFile.substr(2).replace("/", "/sde?") + "_sde";
+                pipeDatum = createDatum(spatialUrl);
+            }
+        }
+
+        /**
+         * 功能：创建空间坐标转换对象
+         */
+        function createDatum(url) {
+            if (url == null) {
+                url = "http://" + CoordinateTransform.getRootPath() + "/config/spatial.xml";
+            }
+            var dataProcess = document.getElementById("dataProcess");
+            dataProcess.Load();
+            var datum = dataProcess.CoordFactory.CreateDatum(); //earth.Factory.CreateDatum();
+            datum.InitFromFile(url);
+            return datum;
+        }
+
+        /**
+         * 功能：根据编码，获取编码对应的详细值
+         * 参数：type-编码类型；codeId - 编码ID
+         * 返回：编码对应的详细值
+         */
+        function getValueByCode(type, codeId) {
+            var value = "";
+            var nodes = pipeConfigDoc.getElementsByTagName(type);
+            for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i];
+                var codeNode = node.selectSingleNode("Code");
+                if (parseFloat(codeNode.text) == parseFloat(codeId)) {
+                    value = node.selectSingleNode("Name").text;
+                    break;
+                }
+            }
+            return value;
+        }
+
+
+    });
+    </script>
+</body>
+
+</html>

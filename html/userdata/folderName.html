@@ -1,0 +1,69 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>文件夹名称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css">
+    <style>
+        html,body{ width: 100%; overflow: hidden; padding-top: 5px;}
+        button{ width: 75px; height: 30px; margin: 5px;}
+        div{ width: 100%; text-align: center; margin-top: 15px;}
+        span{ display: inline-block; width:75px; text-align: center; }
+    </style>
+    <script type="text/javascript">
+        var param = window.dialogArguments;
+        function setTrackName(){
+            if(check()){
+                window.returnValue = tName.value;
+                window.close();
+            }
+        }
+
+        //初始化参数
+        function init(){
+            if(param && param.name){
+                tName.value = param.name;
+            }
+        }
+
+        //检查名称
+        function check(){
+            if(tName.value == ""){
+                alert("名称不能为空！");
+                tName.focus();
+                return false;
+            }
+            if(containSpecial(tName.value)){
+                alert("名称不能有特殊字符！");
+                tName.focus();
+                return false;
+            }
+            if(param && param.length > 0){
+                for(var i=0; i<param.length; i++){
+                    if(tName.value == param[i].NAME){
+                        alert("名称不能重复！");
+                        tName.focus();
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+
+        function containSpecial( s ){
+            var containSpecial = RegExp(/[(\ )(\~)(\!)(\@)(\#)(\$)(\%)(\^)(\&)(\*)(\()(\))(\-)(\_)(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\')(\")(\,)(\.)(\/)(\<)(\>)(\?)(\)]+/);
+            return ( containSpecial.test(s) );
+        }
+    </script>
+</head>
+<body onload="init()" style="text-align: center;">
+<div>
+    <span>名  称:</span>
+    <input type="text" name="tName" maxlength="20" id="tName"/>
+</div>
+<div>
+    <button class="largeBtn" id="butAdd" onClick="setTrackName()">确定</button>
+    <button class="largeBtn" onClick="window.close();">取消</button>
+</div>
+</body>
+</html>

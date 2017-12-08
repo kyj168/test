@@ -1,0 +1,159 @@
+<html>
+<head>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>二维图元</title>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/easyui/gray/easyui.css"/>
+    <link rel="stylesheet" href="../../css/easyui/icon.css"/>
+    <link rel="stylesheet" href="../../css/zTree/zTreeStyle.css"/>
+    <link rel="stylesheet" href="../../css/common.css" />
+    <link rel="stylesheet" href="../../css/index.css" />
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.ztree.all.min.js"></script>
+    <script src="../../js/lib/jquery.xml2json.js"></script>
+
+    <script src="../../js/userdata.js"></script>
+</head>
+
+<body style="text-align: left;">
+<div>
+    <table>
+        <tr>
+            <td colspan="2" align="left" height="40px;" >
+                <button class="normalButton" id="createline"  >线</button>&nbsp;
+                <button class="normalButton" id="createcurve"  >曲线</button>&nbsp;
+                <button class="normalButton" id="createpolygon" >多边形</button>&nbsp;
+                <button class="normalButton" id="createcircle" >圆</button>&nbsp;
+                <button class="normalButton" id="createellipse" >椭圆</button>&nbsp;</br>
+                <button class="normalButton" id="createsector" >扇形</button>&nbsp;
+                <button class="normalButton" id="createTexturePolygon" >纹理多边形</button>&nbsp;
+                <button class="normalButton" id="createrectangle" >矩形贴图</button>&nbsp;
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div region="center" border="false">
+    <ul id="userdataTree" class="ztree"></ul>
+</div>
+<!-- 二维数据树右键菜单 -->
+<div id="contextMenuUserdata" class="easyui-menu" style="width:100px;">
+    <div id="divEditUserdata">编辑</div>
+    <div class="menu-sep"></div>
+    <div id="divDeleteUserdata">删除</div>
+</div>
+<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+<script language="JavaScript">
+    var userdataObj={};
+    $(function(){
+        var earth=parent.earth;
+        var userdata=STAMP.Userdata();
+        var filename="2DPrimitives";//二维图元数据存放文件名
+        var userdataTree = null;  //二维图元数据树
+        var userDataDoc=null;//二维图元数据
+
+        userdata.initDataArr(filename);
+        userdata.initTree(userdataTree);
+
+        //按钮状态控制
+        //$("#createline").attr("disabled",true);
+        //$("#createpolygon").attr("disabled",true);
+        //$("#lineNametd,#lineColortd,#lineWidthtd,#lineWidthtd,#shadowtd,#fillcolorid,#descriptiontd,#transparencytext").attr("disabled",true);
+        //$("#select").click(function(){//设置属性
+        //$("#lineNametd,#lineColortd,#lineWidthtd,#lineWidthtd,#shadowtd,#fillcolorid,#descriptiontd,#transparencytext").removeAttr("disabled");
+        //});
+        //$("#lineNametd,#lineColortd,#lineWidthtd,#lineWidthtd,#shadowtd,#fillcolorid,#descriptiontd,#transparencytext").change(function(){
+        //if(check()){
+        //$("#createline").removeAttr("disabled"); //移除disabled属性
+        //$("#createpolygon").removeAttr("disabled");
+        //}else{
+        //$("#createline").attr("disabled",true);
+        //$("#createpolygon").attr("disabled",true);
+        //}
+        //});
+        //$("#lineNametd,#lineColortd,#lineWidthtd,#lineWidthtd,#shadowtd,#fillcolorid,#descriptiontd").trigger("change");
+
+
+        //创建线点击事件
+        $("#createline").click(function (){
+            var treeTag=userdata.createPrimitives("createline",userdataTree);
+        });
+        //创建多边形点击事件
+        $("#createpolygon").click(function (){
+            userdata.createPrimitives("createpolygon",userdataTree);
+        });
+        //创建圆点击事件
+        $("#createcircle").click(function (){
+            userdata.createPrimitives("createcircle",userdataTree);
+        });
+        //创建椭圆点击事件
+        $("#createellipse").click(function (){
+            userdata.createPrimitives("createellipse",userdataTree);
+        });
+        //创建扇形点击事件
+        $("#createsector").click(function (){
+            userdata.createPrimitives("createsector",userdataTree);
+        });
+        //创建曲线点击事件createTexturePolygon
+        $("#createcurve").click(function (){
+            userdata.createPrimitives("createcurve",userdataTree);
+        });
+        //创建矢量面贴纹理点击事件z
+        $("#createTexturePolygon").click(function (){
+            userdata.createPrimitives("createTexturePolygon",userdataTree);
+        });
+        //创建晕渲图点击事件createTexturePolygon
+        $("#creategrid").click(function (){
+            userdata.createPrimitives("creategrid",userdataTree);
+        });
+        $("#createrectangle").click(function(){
+            userdata.createPrimitives("createrectangle",userdataTree);
+        });
+        //页面关闭时清除所有添加到球上的军标
+        /*$(window).unload(function (){
+            if(userdataArr){
+                for(var i=0;i<userdataArr.length;i++){
+                    earth.DetachObject(userdataArr[i]);
+                }
+            }
+        });*/
+    });
+
+    //颜色选择器
+    var sInitColor = null;
+    function lineColorDlg(){
+        var sColor = null;
+        if (sInitColor == null) {
+            sColor = dlgHelper.ChooseColorDlg();
+        } else {
+            sColor = dlgHelper.ChooseColorDlg(sInitColor);
+        }
+        sColor = sColor.toString(16);
+        if (sColor.length < 6) {
+            var sTempString = "000000".substring(0,6-sColor.length);
+            sColor = sTempString.concat(sColor);
+        }
+        sColor = "#" + sColor;
+        document.getElementById("lineColor").value = sColor;
+    }
+    function fillColorDlg(){
+        var sColor = null;
+        if (sInitColor == null) {
+            sColor = dlgHelper.ChooseColorDlg();
+        } else {
+            sColor = dlgHelper.ChooseColorDlg(sInitColor);
+        }
+        sColor = sColor.toString(16);
+        if (sColor.length < 6) {
+            var sTempString = "000000".substring(0,6-sColor.length);
+            sColor = sTempString.concat(sColor);
+        }
+        sColor = "#" + sColor;
+        document.getElementById("fillColor").value = sColor;
+    }
+</script>
+</body>
+</html>

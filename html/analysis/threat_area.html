@@ -1,0 +1,183 @@
+﻿<html>
+<head>
+    <title>危险域分析</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <style>
+        div{ margin: 10px; }
+        input{ width: 100px; margin: 0 5px; font-weight: bold; text-align: left;}
+		#bldchbx{width: 45px; margin: 0 5px; font-weight: bold; text-align: right;}
+		#bldchbx1{width:45px; margin: 0 5px; font-weight: bold; text-align: right;}
+        button{ width: 75px; height: 30px; margin: 5px 10px;}
+    </style>
+</head>
+
+<body onload="loadValley()" onunload="clearResult()" style="font-size: 12px;">
+<div style="margin-top: 15px;margin-left:0px;">
+	<input type="checkbox" checked="true" value="2" id="bldchbx">建筑物 &nbsp;&nbsp;<INPUT TYPE="checkbox" id="bldchbx1" value=1>地形	
+</div>
+<div style="margin-top: 15px;">
+    <span>经度:</span>
+    <input id="Longitude" type="text" value="0"/>
+    <span>度</span>
+</div>
+<div style="margin-top: 15px;">
+    <span>纬度:</span>
+    <input id="Latitude" type="text" value="0"/>
+    <span>度</span>
+</div>
+<div style="margin-top: 15px;">
+    <span>高程:</span>
+    <input id="Altitude" type="text" value="0"/>
+    <span>米</span>
+</div>
+<div style="margin-top: 15px;">
+    <span>半径:</span>
+    <input id="Radius" type="text" value="0"/>
+    <span>米</span>
+</div>
+<div style="margin-top: 15px;">
+    <span>高度:</span>
+    <input id="Height" type="text" value="0"/>
+    <span>米</span>
+</div>
+<div style="margin-top: 15px;">
+	<button id="btn_select_sector" type="button" class="normalButton" onClick="selectcircle()">选取范围</button>
+	<button onclick="threatArea();">开始分析</button>
+</div>
+<div style="text-align: center;">
+    
+</div>
+<script src="../../js/analysis.js"></script>
+<script>
+    var earth="";
+    function getEarth(earthObj){
+        earth = earthObj;
+        var usearth = earth;
+        var AnalysisResult = null;// 分析结果对象
+        var b_synchronization = false;//分析结果的请求方式，默认是false，异步
+        var g_circel = null;
+        var resArr=parent.resArr;
+        /**
+         * 加载页面数据
+         */
+        function loadValley() {
+            usearth = parent.earth;
+        }
+        /**
+         * 选取范围圆
+         */
+        function selectcircle() {
+            clearResult();
+            usearth.Event.OnCreateGeometry = OnThreatArea;
+            usearth.ShapeCreator.CreateCircle();
+            //usearth.Analysis.Synchronization = b_synchronization;
+            usearth.Event.OnAnalysisFinished = OnAnalysisFinished;
+        }
+        /**
+         * 获得圆数据
+         */
+        function OnThreatArea(p, cType){
+            g_circel = p;
+            document.getElementById("Longitude").value = p.Longitude;
+            document.getElementById("Latitude").value = p.Latitude;
+            document.getElementById("Altitude").value = p.Altitude;
+            document.getElementById("Radius").value = p.Radius;
+            //document.getElementById("sectorsurfaceBtn").disabled = false;
+        }
+        /**
+         * 危险域分析
+         */
+        function threatArea() {
+            clearResult();
+            if (document.getElementById("bldchbx").checked == false && document.getElementById("bldchbx1").checked == false) {
+                alert("请选择建筑物或者地形!");
+                return false;
+            }
+            viewResult.disabled = false;
+            var building = 0;
+            if (document.getElementById("bldchbx").checked) {
+                building += eval(document.getElementById("bldchbx").value);
+            }
+            if (document.getElementById("bldchbx1").checked) {
+                building += eval(document.getElementById("bldchbx1").value);
+            }
+            var longitude = document.getElementById("Longitude").value;
+            var latitude = document.getElementById("Latitude").value;
+            var altitude = document.getElementById("Altitude").value;
+            var radius = document.getElementById("Radius").value;
+            var height = document.getElementById("Height").value;
+
+            var angle = 360;
+
+            if (isNaN(longitude) || isNaN(latitude) || isNaN(altitude) || isNaN(radius) || isNaN(height)) {
+                alert("请输入数字！");
+                return;
+            }
+            if (longitude == "") {
+                alert("请输入经度或选取范围！");
+                return;
+            }
+            if (latitude == "") {
+                alert("请输入纬度或选取范围！");
+                return;
+            }
+            if (altitude == "") {
+                alert("请输入海拔或选取范围！");
+                return;
+            }
+            if (radius == "") {
+                alert("请输入半径或选取范围！");
+                return;
+            }
+            if (parseInt(radius) < 1) {
+                alert("半径不能为零或小于零！");
+                return;
+            }
+            if (height == "") {
+                alert("请输入高度！");
+                return;
+            }
+            if (parseInt(height) < 0) {
+                alert("高度不能小于零！");
+                return;
+            }
+            g_circel.Longitude = longitude;
+            g_circel.Latitude = latitude;
+            g_circel.Altitude = altitude;
+            g_circel.Radius = radius;
+            AnalysisResult = usearth.Analysis.ThreatDome(building, angle, height, g_circel);
+            if (b_synchronization) OnAnalysisFinished( AnalysisResult );
+        }
+        /**
+         * 分析数据回调
+         */
+        function OnAnalysisFinished(res){
+            AnalysisResult = res;
+            resArr.push(res);
+            usearth.ShapeCreator.Clear();
+            //document.getElementById("viewResult").disabled = false;
+        }
+        /**
+         * 定位到分析结果图形
+         */
+        function viewResult() {
+            if (AnalysisResult != null) Analysis.flyToResult(AnalysisResult.LookAt);
+        }
+        /**
+         * 清除分析结果
+         */
+        function clearResult() {
+            if (AnalysisResult != null){
+                AnalysisResult.ClearRes();
+                AnalysisResult = null;
+            }
+            usearth.ShapeCreator.Clear();
+        }
+        window.onunload=function(){
+            analysis.clear();
+        };
+    }
+</script>
+</body>
+</html>

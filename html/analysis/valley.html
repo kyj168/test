@@ -1,0 +1,52 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>流域分析</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/easyui/default/easyui.css" />
+    <style>
+        table{
+            margin:10px auto;
+        }
+        table td{
+            height: 40px;
+            line-height: 40px;
+        }
+        input{ width: 65px; margin: 0 5px;  text-align: left;}
+        button{ width: 65px; height: 30px; margin: 5px 10px;}
+        #getHeight{width: 55px; height:25px;}
+    </style>
+</head>
+
+<body   style="font-size: 14px;">
+<table>
+    <tr>
+        <td><span>水底高程:</span></td>
+        <td><input id="valleyLine1" type="text" value="0"/></td>
+        <td>
+            <span>米</span>
+            <button class="hugeButton" id="getHeight">取高程</button>
+        </td>
+    </tr>
+    <tr>
+        <td><span>水位埋深:</span></td>
+        <td><input id="valleyLine" type="text" value="2"/></td>
+        <td><span>米</span></td>
+    </tr>
+    <tr>
+        <td><span>分析半径:</span></td>
+        <td><input id="valleyRadius" type="text" value="50"/></td>
+        <td><span>米</span></td>
+    </tr>
+</table>
+<div style="text-align: center;">
+    <button class="hugeButton"  id="btnStart">开始分析</button>
+    <button class="hugeButton"  id="clear"  >退出</button>
+</div>
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/analysis/valley.js"></script>
+
+
+</body>
+</html>

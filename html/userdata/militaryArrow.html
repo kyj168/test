@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>军标</title>
+    <link rel="stylesheet" href="../../css/easyui/gray/easyui.css" />
+    <link rel="stylesheet" href="../../css/easyui/icon.css" />
+    <link rel="stylesheet" href="../../css/zTree/zTreeStyle.css" />
+    <link rel="stylesheet" href="../../css/common.css" />
+    <style>
+        input{ width:45px; height: 30px; margin: 3px;}
+        select{ width: 150px; }
+        label { margin: 0 20px; width: 50px; cursor: pointer;}
+    </style>
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.ztree.all.min.js"></script>
+    <script src="../../js/lib/jquery.xml2json.js"></script>
+</head>
+<body id="container" class="easyui-layout" >
+<div region="north" border="true" style="height:100px;text-align: center;">
+    <input type="image" id="btnSArrow" src="../../image/track/return.gif" title="SArrow" />
+    <input type="image" id="btnXArrow" src="../../image/track/return.gif" title="XArrow" />
+    <input type="image" id="btnEqualSArrow" src="../../image/track/return.gif" title="EqualSArrow" />
+    <input type="image" id="btnTailSArrow" src="../../image/track/return.gif" title="TailSArrow" />
+    <input type="image" id="btnDoubleArrow" src="../../image/track/return.gif" title="DoubleArrow" />
+    <input type="image" id="btnCustomArrow" src="../../image/track/return.gif" title="CustomArrow" />
+    <input type="image" id="btnCustomTailArrow" src="../../image/track/return.gif" title="CustomTailArrow" />
+    <input type="image" id="btnAssemblyArea" src="../../image/track/return.gif" title="AssemblyArea" />
+    <!--<input type="image" id="btnTriangleFlag" src="../../image/track/return.gif" title="TriangleFlag" />-->
+    <!--<input type="image" id="btnRectFlag" src="../../image/track/return.gif" title="RectFlag" />-->
+    <!--<input type="image" id="btnCurveFlag" src="../../image/track/return.gif" title="CurveFlag" />-->
+</div>
+<div region="center" border="false" style="overflow:hidden;">
+    <ul id="mTree" class="ztree"></ul>
+</div>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/military.js"></script>
+<script>
+    $(function (){
+        var earth = parent.earth;
+        var military = STAMP.Military();
+        var arrows = {}; // { { id:arrow}, { id:arrow} }
+
+        $("input[type='image']").click(function (){
+            military.callback = function (arrow){
+                if(arrow){
+                    var params = window.showModalDialog("militaryArrowSetting.html",{
+                        name : '军标',
+                        action: "new",
+                        lineColor: "ff0000",
+                        fillColor: "ffff00"
+                    },"dialogWidth=600px;dialogHeight=400px;status=no");
+                    if(params){
+                        arrow.Name = params.name || "军标";
+                        arrow.LineStyle.LineWidth = parseInt(params.lineWidth) || 2;
+                        arrow.LineStyle.LineColor = parseInt("0xFF" + params.lineColor);
+                        arrow.FillStyle.FillColor = parseInt("0xFF" + params.fillColor);
+                    }
+                    arrows[arrow.Guid] = arrow;
+                    var treeObj = $.fn.zTree.getZTreeObj("mTree");
+                    treeObj.addNodes(null, {id:arrow.Guid, name:arrow.Name, checked:true},false);
+                    setTimeout(function (){
+                        saveArrows();
+                    },500);
+                }
+            };
+            military[$(this).attr("id").replace("btn", "createElementPlot")]();
+        });
+        /**
+         * 根据每条xml记录创建相应的军标，并赋予属性
+         * @param record xml记录内容
+         */
+        function createArrow(record){
+            var sArrow = null;
+            switch (parseInt(record["TYPE"])){
+                case 250:  // geoSArrow
+                    sArrow = earth.Factory.CreateElementPlotSArrow(record["ID"], record["NAME"]);
+                    break;
+                case 256:  // geoXArrow
+                    sArrow = earth.Factory.CreateElementPlotXArrow(record["ID"], record["NAME"]);
+                    break;
+                case 251:  // geoEqualSArrow
+                    sArrow = earth.Factory.CreateElementPlotEqualSArrow(record["ID"], record["NAME"]);
+                    break;
+                case 252:  // geoTailSArrow
+                    sArrow = earth.Factory.CreateElementPlotTailSArrow(record["ID"], record["NAME"]);
+                    break;
+                case 255:  // geoDoubleSArrow
+                    sArrow = earth.Factory.CreateElementPlotDoubleArrow(record["ID"], record["NAME"]);
+                    break;
+                case 253:  // geoUserSArrow
+                    sArrow = earth.Factory.CreateElementPlotCustomArrow(record["ID"], record["NAME"]);
+                    break;
+                case 254:  // geoUserTailSArrow
+                    sArrow = earth.Factory.CreateElementPlotCustomTailArrow(record["ID"], record["NAME"]);
+                    break;
+//                case 27:  // geoTriangleFlag
+//                    sArrow = earth.Factory.CreateElementPlotTriangleFlag(record["ID"], record["NAME"]);
+//                    break;
+//                case 28:  // geoRectFlag
+//                    sArrow = earth.Factory.CreateElementPlotRectFlag(record["ID"], record["NAME"]);
+//                    break;
+//                case 29:  // geoCurveFlag
+//                    sArrow = earth.Factory.CreateElementPlotCurveFlag(record["ID"], record["NAME"]);
+//                    break;
+                case 260:  // geoAssemblyArea
+                    sArrow = earth.Factory.CreateElementPlotAssemblyArea(record["ID"], record["NAME"]);
+                    break;
+            }
+            if(sArrow){
+                var points = record["POINTS"].split(",");
+                var pointsArray = earth.Factory.CreateVector3s();
+                for(var i=0; i<points.length; i+=3){
+                    var vector = earth.Factory.CreateVector3();
+                    vector.SetValue(points[i], points[i+1], points[i+2]);
+                    pointsArray.AddVector(vector);
+                }
+                sArrow.BeginUpdate();
+
+                sArrow.AltitudeType = 1;
+                sArrow.SetControlPointArray(pointsArray);
+                var lineStyle = sArrow.LineStyle;
+                lineStyle.LineWidth = parseInt(record["LINEWIDTH"]);
+                lineStyle.LineColor = parseInt(record["LINECOLOR"]);
+                var fillStyle = sArrow.FillStyle;
+                fillStyle.FillColor = parseInt(record["FILLCOLOR"]);
+
+                sArrow.EndUpdate();
+
+                earth.AttachObject(sArrow);
+
+                arrows[sArrow.Guid] = sArrow;
+            }
+        }
+
+        /**
+         * 读取军标xml记录文件，创建保存的军标
+         */
+        function loadArrows(){
+            var setting = {
+                check:{
+                    enable:true, //是否显示checkbox或radio
+                    chkStyle:"checkbox" //显示类型,可设置(checbox,radio)
+                },
+                view:{
+                    dblClickExpand:false, //双击节点时，是否自动展开父节点的标识
+                    expandSpeed:"", //节点展开、折叠时的动画速度, 可设置("","slow", "normal", or "fast")
+                    selectedMulti:false //设置是否允许同时选中多个节点
+                },
+                callback:{
+                    onDblClick:function (event, treeId, node) {
+                        if(node && node.id){
+                            var arrow = arrows[node.id];
+                            if(arrow){
+                                var transform = arrow.SphericalTransform;
+                                earth.GlobeObserver.FlytoLookat(transform.Longitude, transform.Latitude, transform.Altitude,
+                                        90, 45, 0, 500, 3);
+                                arrow.ShowHighLight();
+                            }
+                        }
+                    },
+                    onCheck:function (event, treeId, node) {
+                        var arrow = arrows[node.id];
+                        if(arrow){
+                            arrow.Visibility = node.checked;
+                        }
+                    }
+                }
+            };
+            var zNodes = [];
+            var xmlArrowData = earth.UserDocument.LoadXmlFile(earth.RootPath + STAMP_config.constants.MILITARYFILE + ".xml");
+            var res = $.xml2json(xmlArrowData);
+            if(res && res.record){
+                if(res.record['ID']){
+                    zNodes.push({
+                        id: res.record["ID"],
+                        name: res.record["NAME"],
+                        checked:res.record["CHECKED"]
+                    });
+                    createArrow(res.record);
+                }else{
+                    for(var r in res.record){
+                        if(res.record.hasOwnProperty(r)){
+                            zNodes.push({
+                                id: res.record[r]["ID"],
+                                name: res.record[r]["NAME"],
+                                checked:res.record[r]["CHECKED"]
+                            });
+                            createArrow(res.record[r]);
+                        }
+                    }
+                }
+            }
+            $.fn.zTree.init($("#mTree"), setting, zNodes);
+        }
+        loadArrows();
+
+        /**
+         * 保存所有创建的军标到xml中
+         */
+        function saveArrows(){
+            earth.UserDocument.SaveXmlFile(earth.RootPath + STAMP_config.constants.MILITARYFILE, exportArrows());
+        }
+
+        /**
+         * 将军标树转换为xml字符串
+         * @return {String}
+         */
+        function exportArrows(){
+            var xml = "<xml>";
+            var treeObj = $.fn.zTree.getZTreeObj("mTree");
+            var nodes = treeObj.transformToArray(treeObj.getNodes());
+            for(var i=0; i<nodes.length; i++){
+                var arrow = arrows[nodes[i].id];
+                var pointsArray = arrow.GetControlPointArray();   // SEVector3s
+                var points = [];
+                for(var j=0; j<pointsArray.Count; j++){
+                    var pt = pointsArray.Items(j);
+                    points.push(pt.X, pt.Y, pt.Z);
+                }
+                xml += "\n\t<record ID='" + arrow.Guid +
+                        "' NAME='" + arrow.Name +
+                        "' LINEWIDTH='" + arrow.LineStyle.LineWidth +
+                        "' LINECOLOR='" + arrow.LineStyle.LineColor +
+                        "' FILLCOLOR='" + arrow.FillStyle.FillColor +
+                        "' POINTS='" + points.join(",") +
+                        "' TYPE='" + arrow.Rtti +
+                        "' CHECKED='" + arrow.Visibility +
+                        "' />";
+            }
+            xml += "\n</xml>";
+
+            return xml;
+        }
+
+        /**
+         * 页面关闭时清除所有添加到球上的军标
+         */
+        $(window).unload(function (){
+            for(var id in arrows){
+                if(arrows.hasOwnProperty(id)){
+                    earth.DetachObject(arrows[id]);
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

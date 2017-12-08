@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>区域监测</title>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/analysis.css"/>
+    <style>
+        .selectM{
+            width: 140px;
+        }
+    </style>
+</head>
+<body>
+    <table class="paramTable">
+        <tr>
+            <td>
+                <span>工程名称:</span>
+            </td>
+            <td>
+                <select class="selectM" name="project" id="project"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>监测地形1:</span>
+            </td>
+            <td>
+                <select class="selectM" name="beforSlide" id="beforSlide"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>监测地形2:</span>
+            </td>
+            <td>
+                <select class="selectM" name="afterSlide" id="afterSlide"></select>
+            </td>
+        </tr>
+    </table>
+    <div class="buttonTd">
+        <button id="btnAll">全部分析</button>
+        <button id="btnStart">区域分析</button>
+        <button id="clear">退出</button>
+    </div>
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+<script type="text/javascript" src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script type="text/javascript" src="../../js/config/config.js"></script>
+<script type="text/javascript" src="../../js/analysis/areaMonitor.js"></script>
+</body>
+</html>

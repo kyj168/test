@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>逃生路线</title>
+    <link rel="stylesheet" href="../../css/common.css" type="text/css"/>
+    <style type="text/css" media="screen">
+        body,td {
+            margin-top:15px;
+            font-size:12px;
+            height: 30px;
+        }
+        body .colorwell-selected {
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        button{ width: 65px; height: 30px; margin: 5px 10px;}
+    </style>
+</head>
+
+<body style="text-align: center;">
+
+<table style="margin-left:auto;margin-right:auto;">
+
+    <tr>
+
+        <td align="right">管径:</td>
+
+        <td ><INPUT type="text" id="radius" style="width:169px; float: left;" maxlength="20" value="0.5"/></td>
+
+    </tr>
+
+
+
+    <tr id="undertexttrue">
+
+        <td align="left" >纹理图片:</td>
+
+        <td>
+
+            <input type="text" id="texture0" style="width:169px;" value="" readonly/>
+
+            <!--<input type="button" class="button" value="浏览" onClick="addLink('texture0','0')" />-->
+            <img src="../../images/dialog/file.png" width="25" height="25" onClick="addLink('texture0','0')" />
+        </td>
+
+    </tr>
+
+
+
+    <tr>
+
+        <td colspan="2" align="center" height="40px;">
+
+            <!--<input type="button" class="normalButton" value="确定" onClick="polygon_submit()"/>&nbsp;
+
+            <input type="button" class="normalButton" value="取消" onClick="closeWindow()"/>-->
+            <button class="largeBtn" onClick="submit()">确定</button>
+            <button class="largeBtn" onClick="closeWindow()">取消</button>
+        </td>
+
+    </tr>
+
+</table>
+
+<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+
+</body>
+
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/config/config.js"></script>
+<script src="../../js/userdata/flowroute.js"></script>
+
+</html>
+

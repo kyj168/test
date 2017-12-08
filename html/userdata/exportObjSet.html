@@ -1,0 +1,118 @@
+<html>
+<head>
+    <title>导出</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="../../css/easyui/gray/easyui.css" />
+    <link rel="stylesheet" href="../../css/easyui/icon.css" />
+    <link rel="stylesheet" href="../../css/zTree/zTreeStyle.css" />
+    <link rel="stylesheet" href="../../css/common.css" />
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.ztree.all.min.js"></script>
+    <script src="../../js/lib/jquery.xml2json.js"></script>
+    <!--    <script src="../../js/lib/rull.js"></script>-->
+    <style>
+        /*div{ margin: 10px; }*/
+        input{ width: 30px;  font-weight: bold; text-align: right;}
+        button{ width: 75px; height: 30px; margin: 5px 10px;}
+    </style>
+</head>
+<body  style="font-size: 12px;" onunload="unloadWindow()">
+<div id="fileRadio" >
+    <div><label style="font-size:15px;"><input type="radio" id="tRadio"  checked />项目投影文件</label></div>
+</div>
+<div style="margin-top: 15px;margin-left: 20px;text-align: center; " id="fileDiv"  >
+    <span>项目选择:</span >
+    <select  id="proj"  style="width: 150px;" > </select > </br >
+    <span>数据文件:</span>
+    <input type="text"  id="file" style="width: 150px;"/>
+</div>
+<div id="pathRadio" style="left: 1px;" >
+    <div><label style="font-size:15px;"><input id="zRadio"  type="radio"  />自定义投影文件</label></div>
+</div>
+<div style="margin-top: 15px;margin-left: 20px;text-align: center;" id="pathDiv"  disabled>
+    <span>数据文件:</span>
+    <input type="text"  id="path" style="width: 150px;">
+    <img src="../../image/file.jpg" width="25" height="25" onclick="openspatialLink()" />
+    </select >
+</div>
+
+<div style="margin-top: 25px;text-align: center;" >
+    <button id="btn_select_sector" type="button" class="normalButton" >确定</button>
+    <button id="btnStop">取消</button>
+</div>
+<script>
+    var obj = window.dialogArguments;
+    var isSubmit = false;
+    $(function(){
+        initSpa();
+        $("#proj").change(function (){
+            var filepath = $(this).val();
+            $("#file").val(filepath);
+        });
+        $("#proj").trigger("change");
+        $("#fileRadio").click(function(){
+            $("#fileDiv"). removeAttr("disabled");
+            $("#pathDiv"). attr("disabled","disabled");
+            $("#pathRadio :radio"). removeAttr("checked");
+            $("#fileRadio :radio").attr("checked", "checked");
+        });
+        $("#pathRadio").click(function(){
+            $("#pathDiv"). removeAttr("disabled");
+            $("#fileDiv"). attr("disabled","disabled");
+            $("#fileRadio :radio"). removeAttr("checked");
+            $("#pathRadio :radio").attr("checked", "checked");
+        });
+        $("#btn_select_sector").click(function(){
+            test();
+            if(returnTag){
+                window.close();
+            }
+        });
+        var returnTag = true;
+        var test = function(){
+            if(document.getElementById("tRadio").checked && $("#file").val()){
+                obj.selectSet = $("#file").val();
+            } else  if(document.getElementById("zRadio").checked && $("#path").val()){
+                obj.selectSet = $("#path").val();
+            } else {
+                alert("请先设置spatial路径");
+                returnTag = false;
+                return;
+            }
+            obj.tag = true;
+            isSubmit = true;
+            return  obj;
+        }
+        $("#btnStop").click(function(){
+            window.close();
+        });
+    });
+    function initSpa(){
+        if(!obj.spatial){
+            return;
+        }
+        for(var i=0;i<obj.spatial.length;i++){
+            var projLayer = obj.earth.LayerManager.GetLayerByGUID(obj.spatial[i].id);
+            var opt = document.createElement("OPTION");
+            opt.value =  projLayer.ProjectSetting.SpatialRefFile;
+            opt.text = obj.spatial[i].name;
+            document.getElementById("proj").options.add(opt);
+        }
+
+    }
+    function openspatialLink(){
+        var filePath = obj.earth.UserDocument.OpenFileDialog(obj.earth.RootPath,"*.spatial");
+        if (filePath == "")
+            return;
+        document.getElementById("path").value = filePath;
+    }
+    function unloadWindow(){
+        if(isSubmit){
+            obj.tag = true;
+        }
+
+    }
+</script>
+</body>
+</html>

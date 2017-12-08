@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>initpoint.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+  
+  <script language="JavaScript">
+  		function submit(){
+  			var pointValue=document.getElementById("point").value;
+			if("" == pointValue){
+				alert("请输入棱角数量！");
+				return false;
+			}
+			if(isNaN(pointValue)){
+				alert("棱角数必须是数字！");
+				return false;
+			}
+			if(parseInt(pointValue) < 3){
+				alert("棱角数不能小于3！");
+				return false;
+			}
+  			window.returnValue=pointValue;
+  			window.close();
+  		}
+  
+  </script >
+  </head>
+  <body >
+  <table>
+	<tr>
+		  <td align="center">设置顶点个数:</td>
+		  <td><input type="text" id="point" style="width:40px;" value="5" /></td>
+	</tr>
+	<tr>  
+		  <td align="center">
+		  	<input type="button" id="submit" style="width:40px;" value="确定"  onclick="submit()"/>
+		  </td>
+	</tr>		  
+  </table>
+  </body>
+</html>

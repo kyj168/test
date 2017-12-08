@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>wind scene</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/icon.css" />
+    <style>
+        /*div{ margin: 10px;font-size: 12px; text-align: center;}*/
+        #container>div{ margin: 10px 0; }
+        input{  font-weight: bold; text-align: left;}
+        button{ width: 65px; height: 30px; margin: 5px 2px;}
+    </style>
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/locale/easyui-lang-zh_CN.js"></script>
+    <script src="../../js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div>
+   <div style="margin:15px;font-size: 12px; text-align: center;">
+    <span>目录:</span>
+    <input id="path" style="width: 144px;" value="E:\\testTool3\\20150128000000"/>
+
+</div>
+
+
+
+<div style="text-align: center;">
+    <button id="btnStartAnalysis">开始分析</button>
+</div>
+<script type="text/javascript">
+function getEarth(earthObj){
+    var earth = earthObj;
+    var analysis = earth.analysisObj;
+
+    $("#btnStartAnalysis").click(function (){
+        var layers = new Array();
+        layers[0] = 30;
+        layers[1] = 31;
+        analysis.windScene("E:\\testTool3\\20150128000000", layers);
+    });
+
+}
+</script>
+</body>
+</html>

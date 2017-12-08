@@ -1,0 +1,114 @@
+<html>
+<head>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>军标</title>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<link rel="stylesheet" href="../../css/easyui/gray/easyui.css"/>
+    <link rel="stylesheet" href="../../css/easyui/icon.css"/>
+    <link rel="stylesheet" href="../../css/zTree/zTreeStyle.css"/>
+    <link rel="stylesheet" href="../../css/common.css" />
+    <link rel="stylesheet" href="../../css/index.css" />
+	<script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.ztree.all.min.js"></script>
+    <script src="../../js/lib/jquery.xml2json.js"></script>
+
+	<script src="../../js/userdata.js"></script>
+</head>
+
+<body style="text-align: left;">
+	<div>
+	<table>
+	<tr>
+		<td colspan="2" align="left" height="40px;" > 
+			 <button class="normalButton" id="SArrow" >简单箭头</button>
+		     <button class="normalButton" id="CustomArrow"  >自定义箭头</button>
+		     <button class="normalButton" id="TailSArrow" >燕尾箭头</button></br>
+			 <button class="normalButton" id="CustomTailArrow" >自定义燕尾箭头</button>
+			 <button class="normalButton" id="EqualSArrow" >直箭头</button>
+			 <button class="normalButton" id="DoubleArrow" >双箭头</button></br>
+			 <button class="normalButton" id="XArrow" >&nbsp;多&nbsp;箭&nbsp;头&nbsp;</button>&nbsp;
+			 <button class="normalButton" id="AssemblyArea" >集结区域</button>&nbsp;
+ 
+		</td>
+	</tr> 
+	</table>
+	</div>
+	<div region="center" border="false">
+         <ul id="userdataTree" class="ztree"></ul>
+    </div>
+	<!-- 二维数据树右键菜单 -->
+	<div id="contextMenuUserdata" class="easyui-menu" style="width:100px;">
+		<div id="divEditUserdata">编辑</div>
+		<div class="menu-sep"></div>
+		<div id="divDeleteUserdata">删除</div>
+	</div>
+	<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+	<script language="JavaScript">
+	$(function(){
+		var earth=parent.earth;
+		var userdata=STAMP.Userdata();
+		var filename="militaryTag";//dao导入数据存放文件名
+		var userdataTree = null;  //导入数据树 
+		var userDataDoc=null;//数据
+		userdata.initDataArr(filename);
+
+        //初始化树
+        userdata.initTree(userdataTree);
+		//userdata.initDataArr(filename);
+		//简单箭头点击事件
+		$("#SArrow").click(function (){
+			userdata.createMilitaryTag("sArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotSArrow();
+		});
+		//自定义箭头点击事件
+		$("#CustomArrow").click(function (){
+			userdata.createMilitaryTag("customArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotCustomArrow();
+		});
+		//燕尾箭头点击事件
+		$("#TailSArrow").click(function (){
+			userdata.createMilitaryTag("tailArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotTailSArrow();
+		});
+		//自定义燕尾家头点击事件
+		$("#CustomTailArrow").click(function (){
+			userdata.createMilitaryTag("customTailArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotCustomTailArrow();
+		});
+		//直箭头点击事件
+		$("#EqualSArrow").click(function (){
+			userdata.createMilitaryTag("equalSArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotEqualSArrow();
+		});
+		//双箭头点击事件
+		$("#DoubleArrow").click(function (){
+			userdata.createMilitaryTag("doubleArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotDoubleArrow();
+		});
+		//多箭头点击事件
+		$("#XArrow").click(function (){
+			userdata.createMilitaryTag("xArrow",userdataTree);
+			earth.ShapeCreator.CreatePlotXArrow();
+		});
+		//集结区点击事件
+		$("#AssemblyArea").click(function (){
+			userdata.createMilitaryTag("assemblyArea",userdataTree);
+			earth.ShapeCreator.CreatePlotAssemblyArea();
+		});
+    
+
+		 //页面关闭时清除所有添加到球上的军标
+       /* $(window).unload(function (){
+			if(userdataArr != null){
+				for(var i=0;i<userdataArr.length;i++){
+					earth.DetachObject(userdataArr[i]);
+				}
+			}
+        });*/
+	});	
+	</script>
+</body>
+</html>

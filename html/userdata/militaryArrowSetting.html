@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>军标设置</title>
+    <meta charset="UTF-8"/>
+    <style>
+        /*div{ width:100%; text-align: center; margin: 10px 5px; }*/
+        span{ display: inline-block; width:100px; }
+        input{ width: 200px;}
+        button{ width: 75px; height: 30px; margin: 5px; }
+    </style>
+    <link rel="stylesheet" href="../../css/colorpicker/colorpicker.css" />
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.colorpicker.js"></script>
+</head>
+<body>
+<div>
+    <span>名称：</span>
+    <input type="text" id="txtName" value="军标" />
+</div>
+<div>
+    <span>边线宽度：</span>
+    <input type="text" id="txtLineWidth" value="2"/>
+</div>
+<div>
+    <span>边线颜色：</span>
+    <input type='text' id="lineColor" />
+</div>
+<div>
+    <span>填充颜色：</span>
+    <input type='text' id="fillColor" />
+</div>
+<div>
+    <button id="btnOK">确定</button>
+</div>
+
+<script type="text/javascript">
+    $(function (){
+        var params = window.dialogArguments;
+        if(params){
+            if(params.action == "new"){
+                $("#txtName").val(params.name || "军标").removeAttr("disabled");
+            }else if(params.action == "edit"){
+                $("#txtName").val(params.name || "军标").attr("disabled", "disabled");
+            }
+            $("#lineColor").val(params.lineColor);
+            $("#fillColor").val(params.fillColor);
+            $("#lineColor,#fillColor").ColorPicker({
+                onSubmit: function(hsb, hex, rgb, el) {
+                    $(el).val(hex);
+                    $(el).ColorPickerHide();
+                },
+                onBeforeShow: function () {
+                    $(this).ColorPickerSetColor(this.value);
+                }
+            }).bind('keyup', function(){
+                $(this).ColorPickerSetColor(this.value);
+            });
+        }
+
+        $("#btnOK").click(function (){
+            var name = $('#txtName').val();
+            if(name){
+                window.returnValue = {
+                    name : name,
+                    lineWidth: $("#txtLineWidth").val(),
+                    lineColor: $("#lineColor").val(),
+                    fillColor: $("#fillColor").val()
+                };
+                window.close();
+            }else{
+                alert("请输入军标名称，不能为空！");
+            }
+        });
+    });
+</script>
+</body>
+</html>

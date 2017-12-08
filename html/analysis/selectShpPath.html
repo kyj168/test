@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>选择路径</title>
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+</head>
+<body>
+<div style="margin-top: 15px;text-align: center;">
+    <label id="lblX" for="txtXValue" style="font-size: 15px;" >选择文件:</label>
+    <input id="selectPath" name="startHeight" type="text"  style="width:90px"  value="" disabled/>
+    <img src="../../images/dialog/file.png" width="25" height="25" id="selectImg" />
+</div>
+<div style="margin-top: 5px;text-align: center;">
+    <label id="lblX2" for="txtXValue" style="font-size: 15px;" >投影文件:</label>
+    <input id="referenceInput" name="startHeight" type="text" style="width:90px"  value="" disabled/>
+    <img src="../../images/dialog/file.png" width="25" height="25" id="selectSpat" />
+</div>
+<div style="margin-top:10px;text-align:center;">
+    <button class="largeBtn" id="importBtn" disabled>确定</button>
+    <button class="largeBtn" id="clear">退出</button>
+</div>
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+<script type="text/javascript" src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script>
+    var params = window.dialogArguments;
+    var earth = params.earth;
+    $(function(){
+        //选择导入文件
+        $("#selectImg").click(function (){
+            var filePath =  earth.UserDocument.OpenFileDialog(earth.RootPath, "shape文件(*.shp)|*.shp|dxf文件(*.dxf)|*.dxf|dwg文件(*.dwg)|*.dwg");
+            if (filePath == ""){
+                return;
+            }
+            $("#selectPath").attr("value", filePath);
+            if(""!=$("#referenceInput").val()){
+                $("#importBtn").attr("disabled", false);
+            }
+        });
+
+        //选择投影文件
+        $("#selectSpat").click(function(){
+            var filePath =  earth.UserDocument.OpenFileDialog(earth.RootPath, "spatial文件(*.spatial)|*.spatial");
+            if (filePath == ""){
+                return;
+            }
+            $("#referenceInput").attr("value", filePath);
+            if(""!=$("#selectPath").val()){
+                $("#importBtn").attr("disabled", false);
+            }
+        });
+
+        //导入按钮触发函数
+        $("#importBtn").click(function(){
+            var path = $("#selectPath").val();
+            var reference = $("#referenceInput").val();
+            if(check(path, reference)){
+                var returnValue = {
+                    path:path,
+                    reference:reference
+                }
+                window.returnValue = returnValue;
+            }
+            window.close();
+        });
+        $("clear").click(function(){
+            return false;
+            window.close();
+        })
+    })
+        
+
+    //容错判断
+    function check(path, reference){
+
+        var pathStr = path.split(".");
+        var type = pathStr[pathStr.length - 1];
+        if (type != "dwg" && type != "dxf" && type != "shp"){
+            alert("矢量文件格式不正确,请重新选择文件!");
+            return false;
+        }
+
+        var referenceStr = reference.split(".");
+        var referencetype = referenceStr[referenceStr.length - 1];
+        if (referencetype != "spatial"){
+            alert("空间参考文件格式不正确,请重新选择文件!");
+            return false;
+        }
+
+        if (path === "" || path === undefined || reference === "" || reference === undefined) {
+            alert("请选择文件与投影文件!");
+            return false;
+        }
+
+        return true;
+    }
+    
+</script>
+</body>
+</html>

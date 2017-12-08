@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>三维图元</title>
+	<link rel="stylesheet" href="../../css/easyui/gray/easyui.css"/>
+    <link rel="stylesheet" href="../../css/easyui/icon.css"/>
+    <link rel="stylesheet" href="../../css/zTree/zTreeStyle.css"/>
+    <link rel="stylesheet" href="../../css/common.css" />
+    <link rel="stylesheet" href="../../css/index.css" />
+	<script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.ztree.all.min.js"></script>
+    <script src="../../js/lib/jquery.xml2json.js"></script>
+    <script src="../../js/config.js"></script>
+	<script src="../../js/userdata.js"></script>
+	<style type="text/css" media="screen">
+	body,td ,font{
+		margin-top:15px;
+		font-size:12px;
+	}
+	body .colorwell-selected {
+		border: 2px solid #000;
+		font-weight: bold;
+	}
+	</style>
+  </head>
+  
+<body>
+<div>
+<table>	
+	<tr>
+		<td colspan="2" align="left" height="40px;" > 
+			 <button class="normalButton" id="createcone" >圆  锥</button>&nbsp;
+			 <button class="normalButton" id="createvolume"  >立 体 图</button>&nbsp;
+		     <button class="normalButton" id="createcylinder" >圆  柱</button>&nbsp;</br>
+			 <button class="normalButton" id="createpyramid" >棱  锥</button>&nbsp;
+		     <button class="normalButton" id="createbox" >立 方 体</button>&nbsp;
+			 <button class="normalButton" id="createprism"  >棱  柱</button>&nbsp;</br>
+			 <button class="normalButton" id="createsphere" >球  体</button>&nbsp;
+			 
+		</td>
+	</tr>
+</table>
+</div>
+<div region="center" border="false">
+     <ul id="userdataTree" class="ztree"></ul>
+</div>
+<!-- 3维数据树右键菜单 -->
+	<div id="contextMenuUserdata" class="easyui-menu" style="width:100px;">
+		<div id="divEditUserdata">编辑</div>
+		<div class="menu-sep"></div>
+		<div id="divDeleteUserdata">删除</div>
+	</div>
+<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+
+<script language="javascript">
+	<!--
+	var earth=parent.earth;
+	var userdataObj = {};
+	$(function(){
+		var userdata=STAMP.Userdata();
+		var filename="3DMaps";//3维图元数据存放文件名
+		var userdataTree = null;  //3维图元数据树 
+		var userDataDoc=null;//3维图元数据
+		userdata.initDataArr(filename);
+
+        //初始化树
+        userdata.initTree(userdataTree);
+
+		//创建立方体点击事件
+		$("#createbox").click(function (){
+			userdata.createPrimitives("createbox",userdataTree);
+			//initTree();
+		});
+		//创建球体点击事件
+		$("#createsphere").click(function (){
+			userdata.createPrimitives("createsphere",userdataTree);
+			//initTree();
+		});
+		//创建立体图点击事件
+		$("#createvolume").click(function (){
+			userdata.createPrimitives("createvolume",userdataTree);
+			//initTree();
+		});
+		//创建圆柱点击事件
+		$("#createcylinder").click(function (){
+			userdata.createPrimitives("createcylinder",userdataTree);
+			//initTree();
+		});
+		//创建棱柱点击事件
+		$("#createprism").click(function (){
+			userdata.createPrimitives("createprism",userdataTree);
+			//initTree();
+		});
+		//创建圆锥点击事件
+		$("#createcone").click(function (){
+			userdata.createPrimitives("createcone",userdataTree);
+			//initTree();
+		});
+		//创建棱锥点击事件
+		$("#createpyramid").click(function (){
+			userdata.createPrimitives("createpyramid",userdataTree);
+			//initTree();
+		});
+		 //页面关闭时清除所有添加到球上的军标
+        /*$(window).unload(function (){
+			if(userdataArr != null){
+				for(var i=0;i<userdataArr.length;i++){
+					earth.DetachObject(userdataArr[i]);
+				}
+			}
+        });*/
+	});
+	/**
+	 * 添加材质
+	 */
+	function addLink(textId,hz) {
+		var filePath =  earth.UserDocument.OpenFileDialog(  earth.RootPath, "*.jpeg|*.jpg|*.png|*.bmp|*.gif");
+		if (filePath == "")
+			return;
+		var fileType = filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase();
+		if ("jpg" == fileType || "jpeg" == fileType || "png" == fileType || "bmp" == fileType || "gif" == fileType) {
+			document.getElementById(textId).value = filePath;
+			//setDisabledByHZ(false,hz);
+		} else {
+			alert("支持图片格式为:jpeg,jpg,png,bmp,gif");
+		}
+	}
+	/**
+	 * 颜色选择器
+	 */
+	var sInitColor = null;
+	function fillColorDlg(){
+	var sColor = null;
+		if (sInitColor == null) {
+			sColor = dlgHelper.ChooseColorDlg();
+		} else {
+			sColor = dlgHelper.ChooseColorDlg(sInitColor);
+		}
+		sColor = sColor.toString(16);
+		if (sColor.length < 6) {
+			var sTempString = "000000".substring(0,6-sColor.length);
+			sColor = sTempString.concat(sColor);
+		}
+		sColor = "#" + sColor;
+		document.getElementById("fillColor").value = sColor;
+	}	
+	
+	//-->
+	</script>
+</body>
+</html>

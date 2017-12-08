@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>晕眩图&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title>
+	<script language="javascript">
+	<!--
+	var userdataObj = window.dialogArguments;
+	var earth=userdataObj.earth;
+	var iconFileName = "";
+	var isSubmit = false;
+	function billboard_submit(){
+		isSubmit = true;  
+		if(check()) {
+			if(userdataObj != null) {
+				userdataObj.click="true";
+				userdataObj.name = document.getElementById("billboardName").value;
+				userdataObj.desc = document.getElementById("description").value;
+				userdataObj.height = document.getElementById("height").value;
+				/* userdataObj.maxHeight = document.getElementById("maxHeight").value; */
+				userdataObj.path =document.getElementById("iconValue").value;
+				window.close();
+			}
+		}
+	}
+	function check(){
+		var billboardName = document.getElementById("billboardName").value;
+		if("" == billboardName){
+			alert("请输入名字！");
+			return false;
+		}
+        var iconValue = document.getElementById("iconValue").value;
+        if("" == iconValue){
+            alert("请选择图片！");
+            return false;
+        }
+		var height = document.getElementById("height").value;
+		if("" == height){
+			alert("请输入高度！");
+			return false;
+		}
+		if(isNaN(height)){
+			alert("高度必须是数字！");
+			return false;
+		}
+		if(parseInt(height) < 1){
+			alert("高度不能小于1！");
+			return false;
+		}
+		return true;
+	}
+	function billboard_close(){
+		isSubmit = false;
+		userdataObj.click="false";
+		window.close();
+	}
+
+	function unloadWindow(){
+       if(!isSubmit){
+        	userdataObj.click="false";
+        }
+    }
+	
+	var iconPath;
+	function attribute(){
+		var nodeObj = null;
+		iconPath = userdataObj.path;
+		if(!userdataObj.iconName){
+			//iconFileName = iconPath  + "grid/1.asc";
+		}else{
+			iconFileName = userdataObj.path;//iconPath  + "icon/icon.png";
+
+		}
+		//document.getElementById("iconId").src = iconFileName;
+		document.getElementById("iconValue").value = iconFileName;
+		if("add" == userdataObj.action){
+			return;
+		}else if("edit" == userdataObj.action){
+			document.getElementById("billboardName").value =userdataObj.name;
+			document.getElementById("height").value = userdataObj.height;
+			document.getElementById("description").value = userdataObj.desc;
+			document.getElementById("iconValue").value=userdataObj.path;
+            document.getElementById("iconValue").disabled="disabled";
+            document.getElementById("iconValueButton").disabled="disabled";
+            document.getElementById("subAdd").disabled = false;
+		}
+
+	}
+	function addIcon(){
+	    iconFileName = earth.UserDocument.openFileDialog( userdataObj.path, "(*.asc)|*.asc");
+		if (iconFileName == "")
+			return;
+		var fileType = iconFileName.substring(iconFileName.lastIndexOf(".") + 1).toLowerCase();
+			document.getElementById("iconValue").value = iconFileName;
+            document.getElementById("subAdd").disabled = false;
+			//document.getElementById("iconValue").value = iconFileName;
+	}
+	var img=null;
+	function s() {
+		if(img){
+			img.removeNode(true);
+		}
+		img=document.createElement("img");
+		img.style.position="absolute";
+		img.style.visibility="hidden";
+		img.attachEvent("onreadystatechange",orsc);
+		img.attachEvent("onerror",oe);
+		document.body.insertAdjacentElement("beforeend",img);
+		img.src=iconFileName;
+	}
+	function oe() {
+		alert("cant load img");
+	}
+	function orsc() {
+		if(img.readyState!="complete"){
+			return false;
+		};
+		if(img.offsetHeight != 32 && img.offsetWidth != 32){
+			alert("请选择像素为32X32的图片");
+			iconFileName = iconPath  + "icon/icon.png";
+			//document.getElementById("iconId").src = iconFileName;
+			document.getElementById("iconValue").value = iconFileName;
+			return false;
+		}
+		//alert("高:"+img.offsetHeight+"\n宽:"+img.offsetWidth);
+	}
+	//-->
+	</script>
+	<link rel="stylesheet" href="../css/button.css" type="text/css"/>
+	<link rel="stylesheet" href="../css/input.css" type="text/css"/>
+	<link rel="stylesheet" href="../../css/mycss.css" type="text/css"/>
+	<style type="text/css" media="screen">
+	body,td {
+		margin-top:15px;
+		font-size:12px;
+	}
+	body .colorwell-selected {
+		border: 2px solid #000;
+		font-weight: bold;
+	}
+	</style>
+  </head>
+  
+  <body onLoad="attribute()" onunload="unloadWindow()">
+	<center>
+		<table>
+			<tr>
+				<td align="right">名称:</td>
+			  	<td><input id="billboardName" type="text" style="width:169px;" value="grid"/></td>
+			</tr>
+			<tr>
+				<td align="right">
+					<!-- <img id="iconId" src="" height="32px" width="32px" /> -->
+					图片:<font id="iconId"></font>
+					<input type="file" id="file" style="display:none">				</td>
+				<td>
+					<input id="iconValue" style="width:169px;" type="text" disabled/>
+					<input type="button" id="iconValueButton" class="button" value="浏览" onClick="addIcon()"/>				</td>
+			</tr>
+			<tr>
+			<tr>
+				<td align="right">高度:</td>
+				<td>
+					<input id="height" type="text" style="width:169px;" value="2"/>&nbsp;千米				</td>
+			</tr>
+			<tr>
+				<td align="right">描述:</td>
+				<td><textarea name="textarea" cols="30" rows="5" id="description" style="width:169px;"></textarea></td>
+			</tr>
+			<tr>
+				<td align="center" colspan="2" height="40px;">
+					<input id="subAdd" type="button" class="normalButton" value="确定" onClick="billboard_submit()" disabled/>&nbsp;
+					<input type="button" class="normalButton" value="取消" onClick="billboard_close()"/>
+				</td>
+			</tr>
+	  </table>
+	</center>
+  </body>
+</html>

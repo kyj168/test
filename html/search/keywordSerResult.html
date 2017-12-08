@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <title>关键字查询</title>
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/easyui/icon.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mCustomScrollbar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="../../js/plugins/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css">
+    <style>
+        label{
+            display: block;
+            margin-bottom: 14px;
+        }
+        tr{
+            height: 27px;
+            line-height: 27px;
+        }
+        #northDiv,#tablediv{
+            padding-bottom: 5px;
+        }
+        #southDiv{
+            height: 28px;
+            line-height: 28px;
+            margin-top: -3px;
+        }
+        select{
+            width: 165px;
+        }
+        #layerTd{
+            width: 100%;
+            height: 20px;
+            font-size: 14px;
+            line-height: 20px;
+        }
+        #searchData{
+            text-align: center;
+        }
+
+        #searchkey{
+            margin-left: 20px;
+            width: 158px;
+        }
+        #paramSetInner{
+            text-align: center;
+        }
+        .oneInputBtn span{
+            line-height: 24px;
+            margin-right: -4px;
+        }
+        .oneInputBtn input{
+            width: 143px;
+            margin-top: 14px;
+        }
+        .pagination table{
+            margin-left: 21px;
+        }
+        .southClick{
+            width: 80px;
+            float: right;
+        }
+    </style>
+</head>
+
+<body id="container" class="easyui-layout" oncontextmenu="return false;">
+<object id="dataProcess" classid="clsid:DDA7E893-8EEE-4A1E-A506-867932BD0FB9" style="display:none;"></object>
+<div id="northDiv" class="north" region="north">
+    <div class="cardTitle">参数设置</div>
+    <div id="paramSetInner">
+        <label>
+            <span>选择图层:</span>
+            <select id="layerSelect">
+            </select>
+        </label>
+        <label>
+            <span>关键字:</span>            <input type="text" id="searchkey" name="searchkey">
+        </label>
+        <button id="searchBtn">查询</button>
+        <div id="layerTd" style="display: none;"></div>
+    </div>
+</div>
+<div id="tablediv" class="enter" region="center">
+    <div class="cardTitle">查询结果</div>
+    <div id="dgDiv">
+        <div id="srcollDiv">
+            <div id="searchData"></div>
+        </div>
+        <div id="pageDiv">
+            <div id="page"></div>
+        </div>
+    </div>
+</div>
+<div id="southDiv" region="south">
+    <label class="southClick">
+        <input id="search_info" type="checkbox"/>
+        <span>详细信息</span>
+    </label>
+</div>
+</body>
+
+
+<script src="../../js/plugins/jquery1.9.0.min.js"></script>
+<script src="../../js/plugins/jquery.easyui.min.js"></script>
+<script src="../../js/plugins/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="../../js/plugins/jquery.xml2json.js"></script>
+<script src="../../js/stamplib/search.js"></script>
+<script src="../../js/search/keywordSerResult.js"></script>
+</html>

@@ -1,0 +1,103 @@
+<html>
+<head>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>线 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<link rel="stylesheet" href="../../css/easyui/gray/easyui.css"/>
+    <link rel="stylesheet" href="../../css/easyui/icon.css"/>
+    <link rel="stylesheet" href="../../css/zTree/zTreeStyle.css"/>
+    <link rel="stylesheet" href="../../css/common.css" />
+    <link rel="stylesheet" href="../../css/index.css" />
+	<script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/jquery.easyui.min.js"></script>
+    <script src="../../js/lib/jquery.ztree.all.min.js"></script>
+    <script src="../../js/lib/jquery.xml2json.js"></script>
+
+	<script src="../../js/userdata.js"></script>
+</head>
+
+<body style="text-align: left;">
+	<div>
+	<table>
+	<tr>
+		<td colspan="2" align="left" height="40px;" > 
+			 <button class="normalButton" id="model" >导入模型</button>
+		     <button class="normalButton" id="picture"  >导入图片</button>
+		     <button class="normalButton" id="tree" >&nbsp;导&nbsp;入&nbsp;树&nbsp;</button></br>
+			 <button class="normalButton" id="icon" >导入地标</button>
+			 <button class="normalButton" id="furniture" >导入小品</button>
+			 <button class="normalButton" id="simplebuilding" >简单建筑</button>&nbsp;</br>
+			 <button class="normalButton" id="creategrid"  >晕渲图</button>&nbsp;
+		</td>
+	</tr> 
+	</table>
+	</div>
+	<div region="center" border="false">
+         <ul id="userdataTree" class="ztree"></ul>
+    </div>
+	<!-- 二维数据树右键菜单 -->
+	<div id="contextMenuUserdata" class="easyui-menu" style="width:100px;">
+		<div id="divEditUserdata">编辑</div>
+		<div class="menu-sep"></div>
+		<div id="divDeleteUserdata">删除</div>
+	</div>
+	<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+	<script language="JavaScript">
+	$(function(){
+		var earth=parent.earth;
+		var userdata=STAMP.Userdata();
+		var filename="importModel";//dao导入数据存放文件名
+		var userdataTree = null;  //导入数据树 
+		var userDataDoc=null;//数据
+		userdata.initDataArr(filename);
+
+
+        userdata.initTree(userdataTree);
+		//userdata.initDataArr(filename);
+		//导入模型点击事件
+		$("#model").click(function (){
+			userdata.importModelData("model",userdataTree);
+			//initTree();
+		});
+		//导入图片点击事件
+		$("#picture").click(function (){
+			userdata.importModelData("picture",userdataTree);
+			//initTree();
+		});
+		//导入地标
+		$("#icon").click(function (){
+			userdata.importModelData("icon",userdataTree);
+			//initTree();
+		});
+		//导入小品点击事件
+		$("#furniture").click(function (){
+			userdata.importModelData("model",userdataTree);
+			//initTree();
+		});
+		//创建简单建筑点击事件
+		$("#simplebuilding").click(function (){
+			userdata.importModelData("simplebuilding",userdataTree);
+			//initTree();
+		});
+		//导入树点击事件
+		$("#tree").click(function (){
+			userdata.importModelData("model",userdataTree);
+		});
+		//晕渲图
+		$("#creategrid").click(function (){
+			userdata.importModelData("grid",userdataTree);
+		});
+		 //页面关闭时清除所有添加到球上的军标
+       /* $(window).unload(function (){
+			if(userdataArr != null){
+				for(var i=0;i<userdataArr.length;i++){
+					earth.DetachObject(userdataArr[i]);
+				}
+			}
+        });*/
+	});	
+	</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<html>
+<head>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>二维图元编辑</title>
+    <link rel="stylesheet" href="../../css/mycss.css" type="text/css"/>
+    <script language="JavaScript">
+        <!--
+        var userdataObj = window.dialogArguments;
+        function polygon_submit() {
+            if(check()) {
+                returnValue();
+            }
+            window.close();
+        }
+        function returnValue(){
+            if(userdataObj != null) {
+                userdataObj.click="true";
+                var name=document.getElementById("lineRingName").value;
+                userdataObj.name=name;
+
+                var description = document.getElementById("description").value;
+                userdataObj.desc=description;
+                userdataObj.description=description;
+
+                //默认属性
+                userdataObj.selectable = "true";
+                userdataObj.editable = "true";
+                userdataObj.shadow = 1;
+            }
+            return userdataObj;
+        }
+        function check() {
+            if(lineRingName.value=="") {
+                alert("名称不能为空!");
+                return false;
+            }
+            return true;
+        }
+        function attributeUserdata(){
+            document.getElementById("lineRingName").value = userdataObj.type;
+            if(userdataObj.action=="edit"){
+                document.getElementById("lineRingName").value = userdataObj.name;
+                document.getElementById("description").value = userdataObj.description;
+            }
+
+        }
+        function closeWindow(){
+
+            window.close();
+        }
+        //-->
+    </script>
+    <link rel="stylesheet" href="../css/button.css" type="text/css"/>
+    <link rel="stylesheet" href="../css/input.css" type="text/css"/>
+    <style type="text/css" media="screen">
+        body,td {
+            margin-top:15px;
+            font-size:12px;
+        }
+        body .colorwell-selected {
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body onLoad="attributeUserdata()" style="text-align: center;">
+<table>
+    <tr>
+        <td align="right">名称:</td>
+        <td ><INPUT type="text" id="lineRingName" style="width:169px;" maxlength="20" value="element"/></td>
+    </tr>
+    <tr>
+        <td align="right">描述:</td>
+        <td><textarea id="description" style="width:169px;" cols="30" rows="5" ></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center" height="40px;">
+            <input type="button" class="normalButton" value="确定" onClick="polygon_submit()"/>&nbsp;
+            <input type="button" class="normalButton" value="取消" onClick="closeWindow()"/>
+        </td>
+    </tr>
+</table>
+<OBJECT id="dlgHelper" CLASSID="clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b" width="0px" height="0px"></OBJECT>
+</body>
+</html>

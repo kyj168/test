@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>选择Icon &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title>
+		<style type="text/css" media="screen">
+		body,td {
+			margin-top:15px;
+			font-size:12px;
+			background-color:#CCCCFF;
+		}
+		</style>
+		<script language="JavaScript">
+			function icon(){
+				var iconObj = window.dialogArguments;
+				var path = iconObj.icon_path;
+				var iconName = iconObj.allIcons;
+				var temporarily = iconName.split(",");
+				
+				var table = "";
+				table += "<table><tr>";
+				for(var i=0;i<temporarily.length;i++){
+					var picture = temporarily[i];
+					if("" != picture){
+						table += "<td>";
+						table += '<div id=img'+i+' onclick="';
+						table += "picture_name('";
+						table += picture
+						table += "')";
+						table += '"';
+						table += " src='";
+						table += path + picture;
+						table += "' style='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale)'></div>";
+						table += "</td>";
+					}
+				}
+				table += "</tr></table>";
+				document.getElementById("icon").innerHTML = table;
+			}
+			function showPic()
+			{
+				var iconObj = window.dialogArguments;
+				var path = iconObj.icon_path;
+				var iconName = iconObj.allIcons;
+				var temporarily = iconName.split(",");
+				for(var i=0;i<temporarily.length;i++){
+					 var tmpImg = document.getElementById("img"+i);
+				     tmpImg.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = tmpImg.src;
+					 tmpImg.style.width = "32px";
+					 tmpImg.style.height = "32px";
+				}
+			}
+			function picture_name(picture){
+				parent.returnValue = picture;
+				window.close();
+			}
+
+		</script>
+	</head>
+
+	<body onload="icon();showPic();">
+		<div id="icon"></div>
+	</body>
+</html>
